@@ -4,7 +4,6 @@ import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
-import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -45,6 +44,9 @@ public class AwesomeLinkFilter implements Filter {
 				}
 				virtualFiles.add(virtualFile);
 			}
+			if (0 >= virtualFiles.size()) {
+				return null;
+			}
 			HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
 					virtualFiles,
 					matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
@@ -52,7 +54,7 @@ public class AwesomeLinkFilter implements Filter {
 			);
 			return new Result(startPoint + matcher.start(), startPoint + matcher.end(), linkInfo);
 		}
-		return new Result(startPoint, endPoint, null, new TextAttributes());
+		return null;
 	}
 
 	private List<File> findFile(List<File> matches, final String name, final File dir) {
