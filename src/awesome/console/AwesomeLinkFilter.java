@@ -27,12 +27,16 @@ public class AwesomeLinkFilter implements Filter {
 		int startPoint = endPoint - s.length();
 		Matcher matcher = URL_PATTERN.matcher(s);
 
-		if (matcher.find()) {
-			return new Result(startPoint + matcher.start(),
-					startPoint + matcher.end(), new OpenUrlHyperlinkInfo(matcher.group(1)));
+		final List<ResultItem> results = new ArrayList<ResultItem>();
+		while (matcher.find()) {
+			results.add(
+				new Result(startPoint + matcher.start(),
+					startPoint + matcher.end(), new OpenUrlHyperlinkInfo(matcher.group(1)))
+			);
 		}
+
 		matcher = FILE_PATTERN.matcher(s);
-		if (matcher.find()) {
+		while (matcher.find()) {
 			final List<File> matchingFiles = new ArrayList<File>();
 			final List <VirtualFile> virtualFiles = new ArrayList<VirtualFile>();
 			findFile(matchingFiles, matcher.group(1), new File(project.getBasePath()));
@@ -45,16 +49,16 @@ public class AwesomeLinkFilter implements Filter {
 				virtualFiles.add(virtualFile);
 			}
 			if (0 >= virtualFiles.size()) {
-				return null;
+				continue;
 			}
 			HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
 					virtualFiles,
 					matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
 					project
 			);
-			return new Result(startPoint + matcher.start(), startPoint + matcher.end(), linkInfo);
+			results.add(new Result(startPoint + matcher.start(), startPoint + matcher.end(), linkInfo));
 		}
-		return null;
+		return new Result(results);
 	}
 
 	private List<File> findFile(List<File> matches, final String name, final File dir) {
