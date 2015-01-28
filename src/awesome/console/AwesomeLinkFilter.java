@@ -23,26 +23,38 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	@Override
-	public Result applyFilter(String s, int endPoint) {
-		int startPoint = endPoint - s.length();
-		Matcher matcher = URL_PATTERN.matcher(s);
-
+	public Result applyFilter(final String line, final int endPoint) {
 		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final int startPoint = endPoint - line.length();
+		results.addAll(getResultItemsUrl(line, startPoint));
+		results.addAll(getResultItemsFile(line, startPoint));
+		return new Result(results);
+	}
+
+	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {
+		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final Matcher matcher = URL_PATTERN.matcher(line);
 		while (matcher.find()) {
 			results.add(
-				new Result(startPoint + matcher.start(),
-					startPoint + matcher.end(), new OpenUrlHyperlinkInfo(matcher.group(1)))
+				new Result(
+					startPoint + matcher.start(),
+					startPoint + matcher.end(),
+					new OpenUrlHyperlinkInfo(matcher.group(1)))
 			);
 		}
+		return results;
+	}
 
-		matcher = FILE_PATTERN.matcher(s);
+	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
+		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final Matcher matcher = FILE_PATTERN.matcher(line);
 		while (matcher.find()) {
 			final List<File> matchingFiles = new ArrayList<File>();
 			final List <VirtualFile> virtualFiles = new ArrayList<VirtualFile>();
 			findFile(matchingFiles, matcher.group(1), new File(project.getBasePath()));
 
 			for (final File file : matchingFiles) {
-				VirtualFile virtualFile = project.getBaseDir().getFileSystem().findFileByPath(file.getPath());
+				final VirtualFile virtualFile = project.getBaseDir().getFileSystem().findFileByPath(file.getPath());
 				if (virtualFile == null) {
 					continue;
 				}
@@ -51,22 +63,29 @@ public class AwesomeLinkFilter implements Filter {
 			if (0 >= virtualFiles.size()) {
 				continue;
 			}
-			HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
-					virtualFiles,
-					matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
-					project
+			final HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
+				virtualFiles,
+				matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
+				project
 			);
-			results.add(new Result(startPoint + matcher.start(), startPoint + matcher.end(), linkInfo));
+			results.add(
+				new Result(
+					startPoint + matcher.start(),
+					startPoint + matcher.end(),
+					linkInfo)
+			);
 		}
-		return new Result(results);
+		return results;
 	}
 
-	private List<File> findFile(List<File> matches, final String name, final File dir) {
+	public List<File> findFile(final List<File> matches, final String name, final File dir) {
 		final File[] files = dir.listFiles();
-		for (File file : files) {
+		for (final File file : files) {
 			if (file.isDirectory()) {
 				findFile(matches, name, file);
-			} else if (file.getName().contains(name)) {
+				continue;
+			}
+			if (file.getName().equals(name)) {
 				matches.add(file);
 			}
 		}
