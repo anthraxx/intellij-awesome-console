@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
-	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9/\\-_\\.]+\\.[a-z]+)(:(\\d+))?(:(\\d+))?");
+	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z][a-zA-Z0-9/\\-_\\.]+\\.[a-z]+)(:(\\d+))?(:(\\d+))?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((file)?(https?)?://[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
 	private final Project project;
 
@@ -22,7 +22,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	@Override
 	public Result applyFilter(String s, int endPoint) {
-		System.err.println("foobar " + s);
+		System.err.println("Checking string: " + s);
 		int startPoint = endPoint - s.length();
 		Matcher matcher = URL_PATTERN.matcher(s);
 		if (matcher.find()) {
@@ -32,17 +32,10 @@ public class AwesomeLinkFilter implements Filter {
 		} else {
 			matcher = FILE_PATTERN.matcher(s);
 			if (matcher.find()) {
-				System.err.println("Found file: " + matcher.group(1));
-				System.err.println("base path:" + project.getBasePath());
-				System.err.println("relative1: " + project.getBaseDir().findFileByRelativePath(matcher.group(1)));
-				System.err.println("relative2: " + project.getBaseDir().findFileByRelativePath("ConsoleTest"));
-				System.err.println("relative3: " + project.getBaseDir().findFileByRelativePath("src/ConsoleTest"));
-				System.err.println("relative4: " + project.getBaseDir().findFileByRelativePath("src/ConsoleTest.java"));
-				System.err.println("find child: " + project.getBaseDir().findChild(matcher.group(1)));
-				System.err.println("find child: " + project.getBaseDir().findChild("ConsoleTest"));
 
-				VirtualFile file = project.getBaseDir().getFileSystem().findFileByPath(matcher.group(1));
+				VirtualFile file = project.getBaseDir().getFileSystem().findFileByPath(project.getBasePath() + "/src/" + matcher.group(1));
 				if (file != null) {
+					System.err.println("I think I found something! -> " + file.toString());
 
 					OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project,
 							file,
