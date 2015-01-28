@@ -1,0 +1,13 @@
+<idea-plugin version="2">
+    <name>Awesome Console Link</name>
+    <version>0.1337</version>
+    <id>awesome.console</id>
+    <vendor email="root@localhost" url="https://localhost">awesome productions</vendor>
+    <description><![CDATA[
+		Plugin that makes the console links 200% more awesome!
+    ]]></description>
+    <idea-version since-build="139.659"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
+    </extensions>
+</idea-plugin>
