@@ -8,7 +8,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
-import java.util.*;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +28,9 @@ public class AwesomeLinkFilter implements Filter {
 	private final Map<String, List<File>> fileCache = new HashMap<String, List<File>>();
 	private final Project project;
 
-	public AwesomeLinkFilter(Project project) {
+	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
+		createFileCache(new File(project.getBasePath()));
 	}
 
 	@Override
@@ -36,10 +47,10 @@ public class AwesomeLinkFilter implements Filter {
 		final Matcher matcher = URL_PATTERN.matcher(line);
 		while (matcher.find()) {
 			results.add(
-				new Result(
-					startPoint + matcher.start(),
-					startPoint + matcher.end(),
-					new OpenUrlHyperlinkInfo(matcher.group(1)))
+					new Result(
+							startPoint + matcher.start(),
+							startPoint + matcher.end(),
+							new OpenUrlHyperlinkInfo(matcher.group(1)))
 			);
 		}
 		return results;
@@ -48,11 +59,8 @@ public class AwesomeLinkFilter implements Filter {
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<ResultItem>();
 		final Matcher matcher = FILE_PATTERN.matcher(line);
-		if (fileCache.isEmpty()) {
-			createFileCache(new File(project.getBasePath()));
-		}
 		while (matcher.find()) {
-			final List <VirtualFile> virtualFiles = new ArrayList<VirtualFile>();
+			final List<VirtualFile> virtualFiles = new ArrayList<VirtualFile>();
 			final List<File> matchingFiles = fileCache.get(matcher.group(1));
 			if (null == matchingFiles) {
 				continue;
@@ -68,31 +76,43 @@ public class AwesomeLinkFilter implements Filter {
 				continue;
 			}
 			final HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
-				virtualFiles,
-				matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
-				project
+					virtualFiles,
+					matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
+					project
 			);
 			results.add(
-				new Result(
-					startPoint + matcher.start(),
-					startPoint + matcher.end(),
-					linkInfo)
+					new Result(
+							startPoint + matcher.start(),
+							startPoint + matcher.end(),
+							linkInfo)
 			);
 		}
 		return results;
 	}
 
 	private void createFileCache(final File dir) {
-		final File[] files = dir.listFiles();
-		for (final File file : files) {
-			if (file.isDirectory()) {
-				createFileCache(file);
-				continue;
-			}
-			if (!fileCache.containsKey(file.getName())) {
-				fileCache.put(file.getName(), new ArrayList<File>());
-			}
-			fileCache.get(file.getName()).add(file);
+		try {
+			Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+					final File[] files = dir.toFile().listFiles(new FileFilter() {
+						@Override
+						public boolean accept(final File file) {
+							return file.isFile();
+						}
+					});
+
+					for (File file : files) {
+						if (!fileCache.containsKey(file.getName())) {
+							fileCache.put(file.getName(), new ArrayList<File>());
+						}
+						fileCache.get(file.getName()).add(file);
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
