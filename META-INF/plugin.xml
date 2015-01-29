@@ -2,9 +2,14 @@
     <name>Awesome Console Link</name>
     <version>0.1337</version>
     <id>awesome.console</id>
-    <vendor email="root@localhost" url="https://localhost">awesome productions</vendor>
+	<vendor email="plugins@battle-over-aiur.de" url="https://github.com/anthraxx/intellij-awesome-console-link">awesome productions</vendor>
     <description><![CDATA[
-		Plugin that makes the console links 200% more awesome!
+		Plugin that makes the console links at least 200% more awesome!
+
+		Links are integrated for the following types:
+		 - source
+		 - file
+		 - url
     ]]></description>
     <idea-version since-build="139.659"/>
     <extensions defaultExtensionNs="com.intellij">
