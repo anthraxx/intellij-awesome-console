@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z][a-zA-Z0-9/\\-_\\.]+\\.[a-z]+)(:(\\d+))?(:(\\d+))?");
-	private static final Pattern URL_PATTERN = Pattern.compile("((ftp)?(file)?(https?)?://[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
+	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
 	private final Map<String, List<File>> fileCache = new HashMap<String, List<File>>();
 	private final Project project;
 
@@ -46,14 +46,29 @@ public class AwesomeLinkFilter implements Filter {
 		final List<ResultItem> results = new ArrayList<ResultItem>();
 		final Matcher matcher = URL_PATTERN.matcher(line);
 		while (matcher.find()) {
+			final String match = matcher.group(1);
+			final String file = getFileFromUrl(match);
+			if (null != file && !new File(file).exists()) {
+				continue;
+			}
 			results.add(
 					new Result(
 							startPoint + matcher.start(),
 							startPoint + matcher.end(),
-							new OpenUrlHyperlinkInfo(matcher.group(1)))
+							new OpenUrlHyperlinkInfo(match))
 			);
 		}
 		return results;
+	}
+
+	public String getFileFromUrl(final String url) {
+		if (url.startsWith("/")) {
+			return url;
+		}
+		if(url.startsWith("file://")) {
+			return url.substring(7);
+		}
+		return null;
 	}
 
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
@@ -102,7 +117,7 @@ public class AwesomeLinkFilter implements Filter {
 						}
 					});
 
-					for (File file : files) {
+					for (final File file : files) {
 						if (!fileCache.containsKey(file.getName())) {
 							fileCache.put(file.getName(), new ArrayList<File>());
 						}
@@ -111,7 +126,7 @@ public class AwesomeLinkFilter implements Filter {
 					return FileVisitResult.CONTINUE;
 				}
 			});
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
