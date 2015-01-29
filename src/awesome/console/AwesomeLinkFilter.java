@@ -65,8 +65,9 @@ public class AwesomeLinkFilter implements Filter {
 		if (url.startsWith("/")) {
 			return url;
 		}
-		if(url.startsWith("file://")) {
-			return url.substring(7);
+		final String fileUrl = "file://";
+		if(url.startsWith(fileUrl)) {
+			return url.substring(fileUrl.length());
 		}
 		return null;
 	}
