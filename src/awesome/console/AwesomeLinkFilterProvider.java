@@ -5,9 +5,6 @@ import com.intellij.execution.filters.Filter;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Default provider for file link filtering
- */
 public class AwesomeLinkFilterProvider implements ConsoleFilterProvider {
 	@NotNull
 	@Override
