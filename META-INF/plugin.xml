@@ -1,5 +1,5 @@
-<idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console-link">
-    <name>Awesome Console Link</name>
+<idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
+    <name>Awesome Console</name>
     <version>0.1337</version>
     <id>awesome.console</id>
     <vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>

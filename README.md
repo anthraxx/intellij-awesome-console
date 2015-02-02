@@ -1,5 +1,5 @@
-Awesome Console Link
-====================
+Awesome Console
+===============
 
 This is an IntelliJ IDEA plugin that finally makes links in your console at least 200% more awesome!
 
