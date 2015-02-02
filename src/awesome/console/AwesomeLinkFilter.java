@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z][a-zA-Z0-9/\\-_\\.]+\\.[a-z]+)(:(\\d+))?(:(\\d+))?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
-	private final Map<String, List<File>> fileCache = new HashMap<String, List<File>>();
+	private final Map<String, List<File>> fileCache = new HashMap<>();
 	private final Project project;
 
 	public AwesomeLinkFilter(final Project project) {
@@ -35,7 +35,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	@Override
 	public Result applyFilter(final String line, final int endPoint) {
-		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final List<ResultItem> results = new ArrayList<>();
 		final int startPoint = endPoint - line.length();
 		results.addAll(getResultItemsUrl(line, startPoint));
 		results.addAll(getResultItemsFile(line, startPoint));
@@ -43,7 +43,7 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {
-		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final List<ResultItem> results = new ArrayList<>();
 		final Matcher matcher = URL_PATTERN.matcher(line);
 		while (matcher.find()) {
 			final String match = matcher.group(1);
@@ -73,10 +73,10 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
-		final List<ResultItem> results = new ArrayList<ResultItem>();
+		final List<ResultItem> results = new ArrayList<>();
 		final Matcher matcher = FILE_PATTERN.matcher(line);
 		while (matcher.find()) {
-			final List<VirtualFile> virtualFiles = new ArrayList<VirtualFile>();
+			final List<VirtualFile> virtualFiles = new ArrayList<>();
 			final List<File> matchingFiles = fileCache.get(matcher.group(1));
 			if (null == matchingFiles) {
 				continue;
