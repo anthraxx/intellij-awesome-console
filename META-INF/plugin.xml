@@ -43,6 +43,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
         <!--<applicationService serviceInterface="awesome.console.config.AwesomeConsoleConfig" serviceImplementation="awesome.console.config.AwesomeConsoleConfig"/>-->
+        <applicationService serviceInterface="awesome.console.config.AwesomeConsoleConfig" serviceImplementation="awesome.console.config.AwesomeConsoleConfig"/>
     </extensions>
 
     <application-components>

@@ -35,7 +35,6 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 	@Override
 	public void loadState(final AwesomeConsoleConfig state) {
 		XmlSerializerUtil.copyBean(state, this);
-		System.err.println("loadState() was called -> " + state.FILE_PATTERN);
 	}
 
 	public static AwesomeConsoleConfig getInstance() {
