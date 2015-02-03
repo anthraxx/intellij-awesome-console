@@ -1,5 +1,6 @@
 package awesome.console;
 
+import awesome.console.config.AwesomeConsoleConfig;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
@@ -31,6 +32,8 @@ public class AwesomeLinkFilter implements Filter {
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
 		srcRoots = getSourceRoots();
+		System.err.println("state.FILE_PATTERN: " + AwesomeConsoleConfig.getInstance().FILE_PATTERN);
+		AwesomeConsoleConfig.getInstance().FILE_PATTERN = "foo";
 		createFileCache(new File(project.getBasePath()));
 	}
 
