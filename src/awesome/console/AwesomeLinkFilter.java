@@ -8,13 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,25 +103,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	private void createFileCache(final File dir) {
 		try {
-			Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
-				@Override
-				public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
-					final File[] files = dir.toFile().listFiles(new FileFilter() {
-						@Override
-						public boolean accept(final File file) {
-							return file.isFile();
-						}
-					});
-
-					for (final File file : files) {
-						if (!fileCache.containsKey(file.getName())) {
-							fileCache.put(file.getName(), new ArrayList<File>());
-						}
-						fileCache.get(file.getName()).add(file);
-					}
-					return FileVisitResult.CONTINUE;
-				}
-			});
+			Files.walkFileTree(dir.toPath(), new ProjectFileVisitor<>(fileCache));
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
