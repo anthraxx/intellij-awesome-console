@@ -18,7 +18,8 @@
 			<li>url</li>
 		</ul>
     ]]></description>
-    <idea-version since-build="139.659"/>
+	<idea-version since-build="139.659"/>
+	<depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
     </extensions>
