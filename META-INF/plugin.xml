@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
-    <name>Awesome Console</name>
-    <version>0.1337.3</version>
-    <id>awesome.console</id>
+    <name>Awesome Console Branch</name>
+    <version>0.1337.1.branch</version>
+    <id>awesome.console.branch</id>
     <vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
     <description><![CDATA[
 		Finally a plugin that makes links in your console at least 200% more awesome!<br/>
@@ -42,6 +42,13 @@
 	<depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
-        <applicationService serviceInterface="awesome.console.config.AwesomeConsoleConfig" serviceImplementation="awesome.console.config.AwesomeConsoleConfig"/>
+        <!--<applicationService serviceInterface="awesome.console.config.AwesomeConsoleConfig" serviceImplementation="awesome.console.config.AwesomeConsoleConfig"/>-->
     </extensions>
+
+    <application-components>
+    <!-- Add your application components here -->
+        <component>
+            <implementation-class>awesome.console.config.AwesomeConsoleConfig</implementation-class>
+        </component>
+    </application-components>
 </idea-plugin>
