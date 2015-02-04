@@ -13,9 +13,11 @@ import java.util.Map;
 
 public class ProjectFileVisitor<T extends Path> extends SimpleFileVisitor<T> {
 
-	private Map<String, List<File>> fileCache;
+	private final Map<String, List<File>> fileCache;
+	private final Map<String, List<File>> fileBaseCache;
 
-	public ProjectFileVisitor(Map<String, List<File>> fileCache) {
+	public ProjectFileVisitor(Map<String, List<File>> fileCache, Map<String, List<File>> fileBaseCache) {
+		this.fileBaseCache = fileBaseCache;
 		this.fileCache = fileCache;
 	}
 
@@ -29,10 +31,21 @@ public class ProjectFileVisitor<T extends Path> extends SimpleFileVisitor<T> {
 		});
 
 		for (final File file : files) {
-			if (!fileCache.containsKey(file.getName())) {
-				fileCache.put(file.getName(), new ArrayList<File>());
+			/** cache for full file name */
+			final String filename = file.getName();
+			if (!fileCache.containsKey(filename)) {
+				fileCache.put(filename, new ArrayList<File>());
 			}
-			fileCache.get(file.getName()).add(file);
+			fileCache.get(filename).add(file);
+			/** cache for basename (full qualified class names) */
+			final String basename = filename.contains(".") ? filename.substring(0, filename.lastIndexOf('.')) : filename;
+			if (0 >= basename.length()) {
+				continue;
+			}
+			if (!fileBaseCache.containsKey(basename)) {
+				fileBaseCache.put(basename, new ArrayList<File>());
+			}
+			fileBaseCache.get(basename).add(file);
 		}
 		return FileVisitResult.CONTINUE;
 	}
