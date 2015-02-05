@@ -34,6 +34,7 @@ public class AwesomeLinkFilter implements Filter {
 		srcRoots = getSourceRoots();
 		createFileCache(new File(project.getBasePath()));
 		srcRoots = getSourceRoots();
+		createFileCache(new File(project.getBasePath()));
 	}
 
 	@Override
