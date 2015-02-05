@@ -1,6 +1,6 @@
 <idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
     <name>Awesome Console</name>
-    <version>0.1337.1</version>
+    <version>0.1337.2</version>
     <id>awesome.console</id>
     <vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
     <description><![CDATA[
@@ -18,6 +18,22 @@
 			<li>url</li>
 		</ul>
     ]]></description>
+ <change-notes><![CDATA[
+		<p>
+			<b>0.1337.2</b><br/>
+			<ul>
+				<li>Support links for fully qualified names.</li>
+			</ul>
+			<b>0.1337.1</b><br/>
+			<ul>
+				<li>Support all IntelliJ based IDEs.</li>
+			</ul>
+			<b>0.1337</b><br/>
+			<ul>
+				<li>Initial release.</li>
+			</ul>
+		</p>
+	]]></change-notes>
 	<idea-version since-build="139.659"/>
 	<depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
