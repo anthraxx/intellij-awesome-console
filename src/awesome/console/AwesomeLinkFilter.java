@@ -5,6 +5,7 @@ import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileSystem;
 
@@ -24,10 +25,12 @@ public class AwesomeLinkFilter implements Filter {
 	private final Map<String, List<File>> fileCache = new HashMap<>();
 	private final Map<String, List<File>> fileBaseCache = new HashMap<>();
 	private final Project project;
+	private final List<String> srcRoots;
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
 		createFileCache(new File(project.getBasePath()));
+		srcRoots = getSourceRoots();
 	}
 
 	@Override
@@ -127,7 +130,7 @@ public class AwesomeLinkFilter implements Filter {
 			if (null == parent) {
 				continue;
 			}
-			if (!parent.endsWith(path)) {
+			if (!matchSource(parent, path)) {
 				continue;
 			}
 			matches.add(file);
@@ -141,5 +144,23 @@ public class AwesomeLinkFilter implements Filter {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private List<String> getSourceRoots() {
+		final VirtualFile[] contentSourceRoots = ProjectRootManager.getInstance(this.project).getContentSourceRoots();
+		final List<String> roots = new ArrayList<>();
+		for (VirtualFile root : contentSourceRoots) {
+			roots.add(root.getPath());
+		}
+		return roots;
+	}
+
+	private boolean matchSource(String parent, String path) {
+		for (String srcRoot : this.srcRoots) {
+			if ((srcRoot + File.separatorChar + path).equals(parent)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
