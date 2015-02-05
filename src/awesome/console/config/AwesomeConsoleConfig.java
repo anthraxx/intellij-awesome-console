@@ -45,7 +45,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 	@Nls
 	@Override
 	public String getDisplayName() {
-		return "display name";
+		return "Awesome Console Settings";
 	}
 
 	@Nullable
