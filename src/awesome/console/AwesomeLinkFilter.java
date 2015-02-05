@@ -33,6 +33,7 @@ public class AwesomeLinkFilter implements Filter {
 		this.project = project;
 		srcRoots = getSourceRoots();
 		createFileCache(new File(project.getBasePath()));
+		srcRoots = getSourceRoots();
 	}
 
 	@Override
