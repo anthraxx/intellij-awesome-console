@@ -20,8 +20,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
-	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9]+)(:(\\d+))?(:(\\d+))?");
+	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)(:(\\d+))?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
+	private static final int LINE_MAX_LENGTH = 1024;
 	private final Map<String, List<File>> fileCache = new HashMap<>();
 	private final Map<String, List<File>> fileBaseCache = new HashMap<>();
 	private final Project project;
@@ -37,9 +38,18 @@ public class AwesomeLinkFilter implements Filter {
 	public Result applyFilter(final String line, final int endPoint) {
 		final List<ResultItem> results = new ArrayList<>();
 		final int startPoint = endPoint - line.length();
-		results.addAll(getResultItemsUrl(line, startPoint));
-		results.addAll(getResultItemsFile(line, startPoint));
+		final String chunk = splitLine(line);
+		results.addAll(getResultItemsUrl(chunk, startPoint));
+		results.addAll(getResultItemsFile(chunk, startPoint));
 		return new Result(results);
+	}
+
+	public String splitLine(final String line) {
+		final int length = line.length();
+		if (LINE_MAX_LENGTH > length) {
+			return line;
+		}
+		return line.substring(0, LINE_MAX_LENGTH);
 	}
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {
