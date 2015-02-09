@@ -1,5 +1,6 @@
 package awesome.console;
 
+import awesome.console.config.AwesomeConsoleConfig;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)(:(\\d+))?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
-	private static final int LINE_MAX_LENGTH = 1024;
+	final AwesomeConsoleConfig config;
 	private final Map<String, List<File>> fileCache = new HashMap<>();
 	private final Map<String, List<File>> fileBaseCache = new HashMap<>();
 	private final Project project;
@@ -32,6 +33,7 @@ public class AwesomeLinkFilter implements Filter {
 		this.project = project;
 		createFileCache(new File(project.getBasePath()));
 		srcRoots = getSourceRoots();
+		config = AwesomeConsoleConfig.getInstance();
 	}
 
 	@Override
@@ -46,10 +48,10 @@ public class AwesomeLinkFilter implements Filter {
 
 	public String splitLine(final String line) {
 		final int length = line.length();
-		if (LINE_MAX_LENGTH > length) {
+		if (config.LINE_MAX_LENGTH > length) {
 			return line;
 		}
-		return line.substring(0, LINE_MAX_LENGTH);
+		return line.substring(0, config.LINE_MAX_LENGTH);
 	}
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {

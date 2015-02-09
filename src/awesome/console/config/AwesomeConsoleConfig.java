@@ -1,5 +1,6 @@
 package awesome.console.config;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -9,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.File;
 
 @State(
 		name = "AwesomeConsole File Pattern",
@@ -18,26 +18,26 @@ import java.io.File;
 				@Storage(id = "IDE config dir", file = StoragePathMacros.APP_CONFIG + "/awesomeconsoleconfig.xml")
 		}
 )
-public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable,
-		ApplicationComponent, ExportableApplicationComponent {
+public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable, ApplicationComponent {
 
-	public int MAX_LINE_LENGTH = 1024;
+	public boolean LIMIT_LINE_LENGTH = true;
+	public int LINE_MAX_LENGTH = 1024;
 
 	@Nullable
 	@Override
 	public AwesomeConsoleConfig getState() {
-		System.err.println("getState() was called -> " + MAX_LINE_LENGTH);
+		System.err.println("getState() was called -> " + LIMIT_LINE_LENGTH + ", " + LINE_MAX_LENGTH);
 		return this;
 	}
 
 	@Override
 	public void loadState(final AwesomeConsoleConfig state) {
 		XmlSerializerUtil.copyBean(state, this);
-		System.err.println("loadState() was called -> " + state.MAX_LINE_LENGTH);
+		System.err.println("loadState() was called -> " + LIMIT_LINE_LENGTH + ", " + state.LINE_MAX_LENGTH);
 	}
 
 	public static AwesomeConsoleConfig getInstance() {
-		return ServiceManager.getService(AwesomeConsoleConfig.class);
+		return ApplicationManager.getApplication().getComponent(AwesomeConsoleConfig.class);
 	}
 
 	@Nls
@@ -92,17 +92,5 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 	@Override
 	public String getComponentName() {
 		return "component name";
-	}
-
-	@NotNull
-	@Override
-	public File[] getExportFiles() {
-		return new File[0];
-	}
-
-	@NotNull
-	@Override
-	public String getPresentableName() {
-		return "presentable name";
 	}
 }
