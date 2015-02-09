@@ -47,6 +47,9 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	public String splitLine(final String line) {
+		if (!config.LIMIT_LINE_LENGTH || config.LINE_MAX_LENGTH < 0) {
+			return line;
+		}
 		final int length = line.length();
 		if (config.LINE_MAX_LENGTH > length) {
 			return line;
