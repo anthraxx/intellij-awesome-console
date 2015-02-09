@@ -16,26 +16,24 @@ import java.io.File;
 		storages = {
 				// TODO: find out why this is not working
 				@Storage(id = "IDE config dir", file = StoragePathMacros.APP_CONFIG + "/awesomeconsoleconfig.xml")
-//				@Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-//				@Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/awesomeconsolecfg.xml", scheme = StorageScheme.DIRECTORY_BASED)
 		}
 )
 public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable,
 		ApplicationComponent, ExportableApplicationComponent {
 
-	public String FILE_PATTERN = "([a-zA-Z][a-zA-Z0-9/\\-_\\.]+\\.[a-z]+)(:(\\d+))?(:(\\d+))?";
+	public int MAX_LINE_LENGTH = 1024;
 
 	@Nullable
 	@Override
 	public AwesomeConsoleConfig getState() {
-		System.err.println("getState() was called -> " + FILE_PATTERN);
+		System.err.println("getState() was called -> " + MAX_LINE_LENGTH);
 		return this;
 	}
 
 	@Override
 	public void loadState(final AwesomeConsoleConfig state) {
 		XmlSerializerUtil.copyBean(state, this);
-		System.err.println("loadState() was called -> " + state.FILE_PATTERN);
+		System.err.println("loadState() was called -> " + state.MAX_LINE_LENGTH);
 	}
 
 	public static AwesomeConsoleConfig getInstance() {
