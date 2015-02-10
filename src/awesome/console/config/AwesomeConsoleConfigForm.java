@@ -8,9 +8,6 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
 public class AwesomeConsoleConfigForm {
-	public static final String DEFAULT_MAX_LENGTH = "1024";
-	public static final boolean DEFAULT_LIMIT = true;
-
 	public JPanel mainpanel;
 	public JCheckBox limitLineMatchingByCheckBox;
 	public JFormattedTextField maxLengthTextField;
@@ -25,6 +22,11 @@ public class AwesomeConsoleConfigForm {
 	}
 
 	private void createUIComponents() {
+		setupLineLimit();
+		setupSplitLineIntoChunk();
+	}
+
+	private void setupLineLimit() {
 		final DecimalFormat decimalFormat = new DecimalFormat("#####");
 		final NumberFormatter formatter = new NumberFormatter(decimalFormat);
 		formatter.setMinimum(0);
@@ -41,11 +43,13 @@ public class AwesomeConsoleConfigForm {
 		itm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				maxLengthTextField.setText(DEFAULT_MAX_LENGTH);
+				maxLengthTextField.setText(String.valueOf(AwesomeConsoleConfig.DEFAULT_LINE_MAX_LENGTH));
 				maxLengthTextField.setEditable(true);
-				limitLineMatchingByCheckBox.setSelected(DEFAULT_LIMIT);
+				limitLineMatchingByCheckBox.setSelected(AwesomeConsoleConfig.DEFAULT_LIMIT_LINE_LENGTH);
 			}
 		});
+	}
 
+	private void setupSplitLineIntoChunk() {
 	}
 }
