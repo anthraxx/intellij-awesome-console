@@ -25,6 +25,9 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 	@Transient
 	private AwesomeConsoleConfigForm form;
 
+	/**
+	 * PersistentStateComponent
+	 */
 	@Nullable
 	@Override
 	public AwesomeConsoleConfig getState() {
@@ -36,10 +39,26 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		XmlSerializerUtil.copyBean(state, this);
 	}
 
+	/**
+	 * Helpers
+	 */
 	public static AwesomeConsoleConfig getInstance() {
 		return ApplicationManager.getApplication().getComponent(AwesomeConsoleConfig.class);
 	}
 
+	private void initFromConfig() {
+		form.limitLineMatchingByCheckBox.setSelected(LIMIT_LINE_LENGTH);
+		form.maxLengthTextField.setText(String.valueOf(LINE_MAX_LENGTH));
+		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
+	}
+
+	private void showErrorDialog() {
+		JOptionPane.showMessageDialog(form.mainpanel, "Error: Please enter a positive number.", "Invalid value", JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
+	 * Configurable
+	 */
 	@Nls
 	@Override
 	public String getDisplayName() {
@@ -58,12 +77,6 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		form = new AwesomeConsoleConfigForm();
 		initFromConfig();
 		return form.mainpanel;
-	}
-
-	private void initFromConfig() {
-		form.limitLineMatchingByCheckBox.setSelected(LIMIT_LINE_LENGTH);
-		form.maxLengthTextField.setText(String.valueOf(LINE_MAX_LENGTH));
-		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
 	}
 
 	@Override
@@ -105,10 +118,6 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		loadState(this);
 	}
 
-	private void showErrorDialog() {
-		JOptionPane.showMessageDialog(form.mainpanel, "Error: Please enter a positive value.", "Invalid value", JOptionPane.ERROR_MESSAGE);
-	}
-
 	@Override
 	public void reset() {
 		initFromConfig();
@@ -116,17 +125,19 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 
 	@Override
 	public void disposeUIResources() {
-
 	}
 
+	/**
+	 * ApplicationComponent
+	 *
+	 * Needed to be shown under 'Other Settings'.
+	 */
 	@Override
 	public void initComponent() {
-
 	}
 
 	@Override
 	public void disposeComponent() {
-
 	}
 
 	@NotNull
