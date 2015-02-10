@@ -40,21 +40,34 @@ public class AwesomeLinkFilter implements Filter {
 	public Result applyFilter(final String line, final int endPoint) {
 		final List<ResultItem> results = new ArrayList<>();
 		final int startPoint = endPoint - line.length();
-		final String chunk = splitLine(line);
-		results.addAll(getResultItemsUrl(chunk, startPoint));
-		results.addAll(getResultItemsFile(chunk, startPoint));
+		final List<String> chunks = splitLine(line);
+		int offset = 0;
+		for (final String chunk : chunks) {
+			results.addAll(getResultItemsUrl(chunk, startPoint + offset));
+			results.addAll(getResultItemsFile(chunk, startPoint + offset));
+			offset += chunk.length();
+		}
 		return new Result(results);
 	}
 
-	public String splitLine(final String line) {
-		if (!config.LIMIT_LINE_LENGTH || config.LINE_MAX_LENGTH < 0) {
-			return line;
-		}
+	public List<String> splitLine(final String line) {
+		final List<String> chunks = new ArrayList<>();
 		final int length = line.length();
-		if (config.LINE_MAX_LENGTH > length) {
-			return line;
+		if (!config.LIMIT_LINE_LENGTH || config.LINE_MAX_LENGTH >= length) {
+			chunks.add(line);
+			return chunks;
+        }
+		if (!config.SPLIT_ON_LIMIT) {
+			chunks.add(line.substring(0, config.LINE_MAX_LENGTH));
+			return chunks;
 		}
-		return line.substring(0, config.LINE_MAX_LENGTH);
+		int offset = 0;
+		do {
+			final String chunk = line.substring(offset, Math.min(length, offset + config.LINE_MAX_LENGTH));
+			chunks.add(chunk);
+			offset += config.LINE_MAX_LENGTH;
+		} while (offset < length - 1);
+		return chunks;
 	}
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {

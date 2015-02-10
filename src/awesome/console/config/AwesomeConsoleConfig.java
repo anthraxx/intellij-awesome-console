@@ -20,6 +20,7 @@ import javax.swing.*;
 )
 public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable, ApplicationComponent {
 
+	public boolean SPLIT_ON_LIMIT = false;
 	public boolean LIMIT_LINE_LENGTH = true;
 	public int LINE_MAX_LENGTH = 1024;
 	@Transient
