@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
 public class AwesomeConsoleConfigForm {
@@ -31,11 +32,13 @@ public class AwesomeConsoleConfigForm {
 		maxLengthTextField = new JFormattedTextField(formatter);
 		maxLengthTextField.setColumns(5);
 
-		JPopupMenu popup = new JPopupMenu();
+		JPopupMenu popup = new JPopupMenu("Defaults");
 		maxLengthTextField.add(popup);
 		maxLengthTextField.setComponentPopupMenu(popup);
 
-		popup.add("Restore default").addActionListener(new ActionListener() {
+		final JMenuItem itm = popup.add("Restore defaults");
+		itm.setMnemonic(KeyEvent.VK_R);
+		itm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				maxLengthTextField.setText(DEFAULT_MAX_LENGTH);
