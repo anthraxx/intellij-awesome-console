@@ -125,12 +125,11 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 
 	@Override
 	public void disposeUIResources() {
+		form = null;
 	}
 
 	/**
 	 * ApplicationComponent
-	 *
-	 * Needed to be shown under 'Other Settings'.
 	 */
 	@Override
 	public void initComponent() {
@@ -143,6 +142,6 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 	@NotNull
 	@Override
 	public String getComponentName() {
-		return "component name";
+		return "Awesome Console";
 	}
 }
