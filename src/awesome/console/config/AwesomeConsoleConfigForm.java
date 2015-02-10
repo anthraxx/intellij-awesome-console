@@ -42,6 +42,7 @@ public class AwesomeConsoleConfigForm {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				maxLengthTextField.setText(DEFAULT_MAX_LENGTH);
+				maxLengthTextField.setEditable(true);
 				limitLineMatchingByCheckBox.setSelected(DEFAULT_LIMIT);
 			}
 		});
