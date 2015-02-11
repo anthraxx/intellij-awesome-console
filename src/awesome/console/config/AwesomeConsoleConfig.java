@@ -55,6 +55,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		form.limitLineMatchingByCheckBox.setSelected(LIMIT_LINE_LENGTH);
 		form.maxLengthTextField.setText(String.valueOf(LINE_MAX_LENGTH));
 		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
+		form.matchLinesLongerThanCheckBox.setSelected(SPLIT_ON_LIMIT);
 	}
 
 	private void showErrorDialog() {
@@ -97,7 +98,8 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 			return true;
 		}
 		return form.limitLineMatchingByCheckBox.isSelected() != LIMIT_LINE_LENGTH
-				|| len != LINE_MAX_LENGTH;
+				|| len != LINE_MAX_LENGTH
+				|| form.matchLinesLongerThanCheckBox.isSelected() != SPLIT_ON_LIMIT;
 	}
 
 	@Override
@@ -120,6 +122,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		}
 		LIMIT_LINE_LENGTH = form.limitLineMatchingByCheckBox.isSelected();
 		LINE_MAX_LENGTH = i;
+		SPLIT_ON_LIMIT = form.matchLinesLongerThanCheckBox.isSelected();
 		loadState(this);
 	}
 
