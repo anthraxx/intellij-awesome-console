@@ -8,14 +8,21 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
 public class AwesomeConsoleConfigForm {
+	private static final boolean DEFAULT_SPLIT_ON_LIMIT = false;
+	private static final boolean DEFAULT_LIMIT_LINE_LENGTH = true;
+	private static final int DEFAULT_LINE_MAX_LENGTH = 1024;
+	private static final boolean DEFAULT_SEARCH_URLS = true;
+
 	public JPanel mainpanel;
 	public JCheckBox limitLineMatchingByCheckBox;
 	public JFormattedTextField maxLengthTextField;
 	public JCheckBox matchLinesLongerThanCheckBox;
+	public JCheckBox searchForURLsFileCheckBox;
 
 	private void createUIComponents() {
 		setupLineLimit();
 		setupSplitLineIntoChunk();
+		setupMatchURLs();
 	}
 
 	private void setupLineLimit() {
@@ -45,10 +52,10 @@ public class AwesomeConsoleConfigForm {
 		itm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				maxLengthTextField.setText(String.valueOf(AwesomeConsoleConfig.DEFAULT_LINE_MAX_LENGTH));
+				maxLengthTextField.setText(String.valueOf(DEFAULT_LINE_MAX_LENGTH));
 				maxLengthTextField.setEnabled(true);
 				maxLengthTextField.setEditable(true);
-				limitLineMatchingByCheckBox.setSelected(AwesomeConsoleConfig.DEFAULT_LIMIT_LINE_LENGTH);
+				limitLineMatchingByCheckBox.setSelected(DEFAULT_LIMIT_LINE_LENGTH);
 				matchLinesLongerThanCheckBox.setEnabled(true);
 			}
 		});
@@ -65,7 +72,23 @@ public class AwesomeConsoleConfigForm {
 		itm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				matchLinesLongerThanCheckBox.setSelected(AwesomeConsoleConfig.DEFAULT_SPLIT_ON_LIMIT);
+				matchLinesLongerThanCheckBox.setSelected(DEFAULT_SPLIT_ON_LIMIT);
+			}
+		});
+	}
+
+	private void setupMatchURLs() {
+		searchForURLsFileCheckBox = new JCheckBox("searchForURLsFileCheckBox");
+		searchForURLsFileCheckBox.setToolTipText("Uncheck if you do not want URLs parsed from the console.");
+		JPopupMenu popup = new JPopupMenu("Defaults");
+		searchForURLsFileCheckBox.setComponentPopupMenu(popup);
+
+		final JMenuItem itm = popup.add("Restore defaults");
+		itm.setMnemonic(KeyEvent.VK_R);
+		itm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				searchForURLsFileCheckBox.setSelected(DEFAULT_SEARCH_URLS);
 			}
 		});
 	}

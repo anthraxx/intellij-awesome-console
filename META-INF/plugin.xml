@@ -25,7 +25,8 @@
 				<li>Added config to Settings -> Other Settings:</li>
 					<ul>
 						<li>Limit the matching of very long lines by a specific length. This may increase performance.</li>
-						<li>Continue matching after the limit chunk by chunk, so links after the limit may also be found.</li>
+						<li>Continue matching after the limit chunk by chunk, so links after the limit may also be found. This affects performance.</li>
+						<li>Match URLs (file, ftp, http(s)). Unchecking may increase performance.</li>
 					</ul>
 			</ul>
 			<b>0.1337.3</b><br/>

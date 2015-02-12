@@ -19,13 +19,10 @@ import javax.swing.*;
 		}
 )
 public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable, ApplicationComponent {
-	public static final boolean DEFAULT_SPLIT_ON_LIMIT = false;
-	public static final boolean DEFAULT_LIMIT_LINE_LENGTH = true;
-	public static final int DEFAULT_LINE_MAX_LENGTH = 1024;
-
 	public boolean SPLIT_ON_LIMIT = false;
 	public boolean LIMIT_LINE_LENGTH = true;
 	public int LINE_MAX_LENGTH = 1024;
+	public boolean SEARCH_URLS = true;
 
 	@Transient
 	private AwesomeConsoleConfigForm form;
@@ -56,6 +53,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		form.maxLengthTextField.setText(String.valueOf(LINE_MAX_LENGTH));
 		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
 		form.matchLinesLongerThanCheckBox.setSelected(SPLIT_ON_LIMIT);
+		form.searchForURLsFileCheckBox.setSelected(SEARCH_URLS);
 
 		form.maxLengthTextField.setEnabled(LIMIT_LINE_LENGTH);
 		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
@@ -95,7 +93,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		if (text.length() < 1) {
 			return true;
 		}
-		int len = -1;
+		int len;
 		try {
 			len = Integer.parseInt(text);
 		} catch (NumberFormatException nfe) {
@@ -103,7 +101,8 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		}
 		return form.limitLineMatchingByCheckBox.isSelected() != LIMIT_LINE_LENGTH
 				|| len != LINE_MAX_LENGTH
-				|| form.matchLinesLongerThanCheckBox.isSelected() != SPLIT_ON_LIMIT;
+				|| form.matchLinesLongerThanCheckBox.isSelected() != SPLIT_ON_LIMIT
+				|| form.searchForURLsFileCheckBox.isSelected() != SEARCH_URLS;
 	}
 
 	@Override
@@ -113,7 +112,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 			showErrorDialog();
 			return;
 		}
-		int i = -1;
+		int i;
 		try {
 			i = Integer.parseInt(text);
 		} catch (NumberFormatException nfe) {
@@ -127,6 +126,7 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		LIMIT_LINE_LENGTH = form.limitLineMatchingByCheckBox.isSelected();
 		LINE_MAX_LENGTH = i;
 		SPLIT_ON_LIMIT = form.matchLinesLongerThanCheckBox.isSelected();
+		SEARCH_URLS = form.searchForURLsFileCheckBox.isSelected();
 		loadState(this);
 	}
 
