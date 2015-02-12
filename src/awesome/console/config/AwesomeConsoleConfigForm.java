@@ -25,6 +25,7 @@ public class AwesomeConsoleConfigForm {
 			public void actionPerformed(final ActionEvent e) {
 				final boolean selected = limitLineMatchingByCheckBox.isSelected();
 				maxLengthTextField.setEnabled(selected);
+				maxLengthTextField.setEditable(selected);
 				matchLinesLongerThanCheckBox.setEnabled(selected);
 			}
 		});
@@ -46,6 +47,7 @@ public class AwesomeConsoleConfigForm {
 			public void actionPerformed(final ActionEvent e) {
 				maxLengthTextField.setText(String.valueOf(AwesomeConsoleConfig.DEFAULT_LINE_MAX_LENGTH));
 				maxLengthTextField.setEnabled(true);
+				maxLengthTextField.setEditable(true);
 				limitLineMatchingByCheckBox.setSelected(AwesomeConsoleConfig.DEFAULT_LIMIT_LINE_LENGTH);
 				matchLinesLongerThanCheckBox.setEnabled(true);
 			}
