@@ -1,9 +1,9 @@
 <idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
-    <name>Awesome Console</name>
-    <version>0.1337.4</version>
-    <id>awesome.console</id>
-    <vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
-    <description><![CDATA[
+	<name>Awesome Console</name>
+	<version>0.1337.4</version>
+	<id>awesome.console</id>
+	<vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
+	<description><![CDATA[
 		Finally a plugin that makes links in your console at least 200% more awesome!<br/>
 		<br/>
 		With this plugin all files and links in the console will be highlighted and can be clicked. Source code files will be opened in the IDE, other links with the default viewer/browser for this type.<br/>
@@ -17,16 +17,16 @@
 			<li>file</li>
 			<li>url</li>
 		</ul>
-    ]]></description>
+	]]></description>
  <change-notes><![CDATA[
 		<p>
 			<b>0.1337.4</b><br/>
 			<ul>
 				<li>Added config to Settings -> Other Settings:</li>
-				<ul>
-                    <li>Limit the matching of very long lines by a specific length. This may increase performance.</li>
-					<li>Continue matching after the limit chunk by chunk, so links after the limit may also be found.</li>
-				</ul>
+					<ul>
+						<li>Limit the matching of very long lines by a specific length. This may increase performance.</li>
+						<li>Continue matching after the limit chunk by chunk, so links after the limit may also be found.</li>
+					</ul>
 			</ul>
 			<b>0.1337.3</b><br/>
 			<ul>
@@ -48,13 +48,13 @@
 	]]></change-notes>
 	<idea-version since-build="139.659"/>
 	<depends>com.intellij.modules.lang</depends>
-    <extensions defaultExtensionNs="com.intellij">
-        <consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
-    </extensions>
+	<extensions defaultExtensionNs="com.intellij">
+		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
+	</extensions>
 
-    <application-components>
-        <component>
-            <implementation-class>awesome.console.config.AwesomeConsoleConfig</implementation-class>
-        </component>
-    </application-components>
+	<application-components>
+		<component>
+			<implementation-class>awesome.console.config.AwesomeConsoleConfig</implementation-class>
+		</component>
+	</application-components>
 </idea-plugin>
