@@ -56,6 +56,10 @@ public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeCon
 		form.maxLengthTextField.setText(String.valueOf(LINE_MAX_LENGTH));
 		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
 		form.matchLinesLongerThanCheckBox.setSelected(SPLIT_ON_LIMIT);
+
+		form.maxLengthTextField.setEnabled(LIMIT_LINE_LENGTH);
+		form.maxLengthTextField.setEditable(LIMIT_LINE_LENGTH);
+		form.matchLinesLongerThanCheckBox.setEnabled(LIMIT_LINE_LENGTH);
 	}
 
 	private void showErrorDialog() {
