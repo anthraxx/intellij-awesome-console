@@ -28,12 +28,16 @@ public class AwesomeLinkFilter implements Filter {
 	private final Map<String, List<File>> fileBaseCache = new HashMap<>();
 	private final Project project;
 	private final List<String> srcRoots;
+	private final Matcher fileMatcher;
+	private final Matcher urlMatcher;
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
 		createFileCache(new File(project.getBasePath()));
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
+		fileMatcher = FILE_PATTERN.matcher("");
+		urlMatcher = URL_PATTERN.matcher("");
 	}
 
 	@Override
@@ -72,17 +76,17 @@ public class AwesomeLinkFilter implements Filter {
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<>();
-		final Matcher matcher = URL_PATTERN.matcher(line);
-		while (matcher.find()) {
-			final String match = matcher.group(1);
+		urlMatcher.reset(line);
+		while (urlMatcher.find()) {
+			final String match = urlMatcher.group(1);
 			final String file = getFileFromUrl(match);
 			if (null != file && !new File(file).exists()) {
 				continue;
 			}
 			results.add(
 					new Result(
-							startPoint + matcher.start(),
-							startPoint + matcher.end(),
+							startPoint + urlMatcher.start(),
+							startPoint + urlMatcher.end(),
 							new OpenUrlHyperlinkInfo(match))
 			);
 		}
@@ -102,9 +106,9 @@ public class AwesomeLinkFilter implements Filter {
 
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<>();
-		final Matcher matcher = FILE_PATTERN.matcher(line);
-		while (matcher.find()) {
-			final String match = matcher.group(1);
+		fileMatcher.reset(line);
+		while (fileMatcher.find()) {
+			final String match = fileMatcher.group(1);
 			final List<VirtualFile> virtualFiles = new ArrayList<>();
 			List<File> matchingFiles = fileCache.get(match);
 			if (null == matchingFiles) {
@@ -126,13 +130,13 @@ public class AwesomeLinkFilter implements Filter {
 			}
 			final HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
 					virtualFiles,
-					matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1,
+					fileMatcher.group(3) == null ? 0 : Integer.parseInt(fileMatcher.group(3)) - 1,
 					project
 			);
 			results.add(
 					new Result(
-							startPoint + matcher.start(),
-							startPoint + matcher.end(),
+							startPoint + fileMatcher.start(),
+							startPoint + fileMatcher.end(),
 							linkInfo)
 			);
 		}
