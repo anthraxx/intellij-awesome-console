@@ -6,13 +6,11 @@ import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileSystem;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +21,9 @@ import java.util.regex.Pattern;
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)(:(\\d+))?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
-	final AwesomeConsoleConfig config;
-	private final Map<String, List<File>> fileCache = new HashMap<>();
-	private final Map<String, List<File>> fileBaseCache = new HashMap<>();
+	private final AwesomeConsoleConfig config;
+	private final Map<String, List<VirtualFile>> fileCache;
+	private final Map<String, List<VirtualFile>> fileBaseCache;
 	private final Project project;
 	private final List<String> srcRoots;
 	private final Matcher fileMatcher;
@@ -33,11 +31,14 @@ public class AwesomeLinkFilter implements Filter {
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
-		createFileCache(new File(project.getBasePath()));
+		this.fileCache = new HashMap<>();
+		this.fileBaseCache = new HashMap<>();
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
 		fileMatcher = FILE_PATTERN.matcher("");
 		urlMatcher = URL_PATTERN.matcher("");
+
+		createFileCache();
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class AwesomeLinkFilter implements Filter {
 		if (!config.LIMIT_LINE_LENGTH || config.LINE_MAX_LENGTH >= length) {
 			chunks.add(line);
 			return chunks;
-        }
+		}
 		if (!config.SPLIT_ON_LIMIT) {
 			chunks.add(line.substring(0, config.LINE_MAX_LENGTH));
 			return chunks;
@@ -100,7 +101,7 @@ public class AwesomeLinkFilter implements Filter {
 			return url;
 		}
 		final String fileUrl = "file://";
-		if(url.startsWith(fileUrl)) {
+		if (url.startsWith(fileUrl)) {
 			return url.substring(fileUrl.length());
 		}
 		return null;
@@ -111,27 +112,19 @@ public class AwesomeLinkFilter implements Filter {
 		fileMatcher.reset(line);
 		while (fileMatcher.find()) {
 			final String match = fileMatcher.group(1);
-			final List<VirtualFile> virtualFiles = new ArrayList<>();
-			List<File> matchingFiles = fileCache.get(match);
+			List<VirtualFile> matchingFiles = fileCache.get(match);
 			if (null == matchingFiles) {
 				matchingFiles = getResultItemsFileFromBasename(match);
 				if (null == matchingFiles || 0 >= matchingFiles.size()) {
 					continue;
 				}
 			}
-			final VirtualFileSystem fileSystem = project.getBaseDir().getFileSystem();
-			for (final File file : matchingFiles) {
-				final VirtualFile virtualFile = fileSystem.findFileByPath(file.getPath());
-				if (null == virtualFile) {
-					continue;
-				}
-				virtualFiles.add(virtualFile);
-			}
-			if (0 >= virtualFiles.size()) {
+
+			if (0 >= matchingFiles.size()) {
 				continue;
 			}
 			final HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
-					virtualFiles,
+					matchingFiles,
 					fileMatcher.group(3) == null ? 0 : Integer.parseInt(fileMatcher.group(3)) - 1,
 					project
 			);
@@ -145,8 +138,8 @@ public class AwesomeLinkFilter implements Filter {
 		return results;
 	}
 
-	public List<File> getResultItemsFileFromBasename(final String match) {
-		final ArrayList<File> matches = new ArrayList<>();
+	public List<VirtualFile> getResultItemsFileFromBasename(final String match) {
+		final ArrayList<VirtualFile> matches = new ArrayList<>();
 		final char packageSeparator = '.';
 		final int index = match.lastIndexOf(packageSeparator);
 		if (-1 >= index) {
@@ -160,12 +153,12 @@ public class AwesomeLinkFilter implements Filter {
 			return matches;
 		}
 		final String path = match.substring(0, index).replace(packageSeparator, File.separatorChar);
-		for (final File file : fileBaseCache.get(basename)) {
-			final String parent = file.getParent();
+		for (final VirtualFile file : fileBaseCache.get(basename)) {
+			final VirtualFile parent = file.getParent();
 			if (null == parent) {
 				continue;
 			}
-			if (!matchSource(parent, path)) {
+			if (!matchSource(parent.getPath(), path)) {
 				continue;
 			}
 			matches.add(file);
@@ -173,11 +166,27 @@ public class AwesomeLinkFilter implements Filter {
 		return matches;
 	}
 
-	private void createFileCache(final File dir) {
-		try {
-			Files.walkFileTree(dir.toPath(), new ProjectFileVisitor<>(fileCache, fileBaseCache));
-		} catch (final IOException e) {
-			e.printStackTrace();
+	private void createFileCache() {
+		final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+		final AwesomeCollectingContentIterator awesomeCollectingContentIterator = new AwesomeCollectingContentIterator();
+		fileIndex.iterateContent(awesomeCollectingContentIterator);
+
+		for (final VirtualFile file : awesomeCollectingContentIterator.getFiles()) {
+			/** cache for full file name */
+			final String filename = file.getName();
+			if (!fileCache.containsKey(filename)) {
+				fileCache.put(filename, new ArrayList<VirtualFile>());
+			}
+			fileCache.get(filename).add(file);
+			/** cache for basename (full qualified class names) */
+			final String basename = filename.contains(".") ? filename.substring(0, filename.lastIndexOf('.')) : filename;
+			if (0 >= basename.length()) {
+				continue;
+			}
+			if (!fileBaseCache.containsKey(basename)) {
+				fileBaseCache.put(basename, new ArrayList<VirtualFile>());
+			}
+			fileBaseCache.get(basename).add(file);
 		}
 	}
 
