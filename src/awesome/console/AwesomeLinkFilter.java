@@ -178,7 +178,7 @@ public class AwesomeLinkFilter implements Filter {
 				fileCache.put(filename, new ArrayList<VirtualFile>());
 			}
 			fileCache.get(filename).add(file);
-			/** cache for basename (full qualified class names) */
+			/** cache for basename (fully qualified class names) */
 			final String basename = file.getNameWithoutExtension();
 			if (0 >= basename.length()) {
 				continue;
