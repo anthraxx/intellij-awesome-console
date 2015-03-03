@@ -179,7 +179,7 @@ public class AwesomeLinkFilter implements Filter {
 			}
 			fileCache.get(filename).add(file);
 			/** cache for basename (full qualified class names) */
-			final String basename = filename.contains(".") ? filename.substring(0, filename.lastIndexOf('.')) : filename;
+			final String basename = file.getNameWithoutExtension();
 			if (0 >= basename.length()) {
 				continue;
 			}
