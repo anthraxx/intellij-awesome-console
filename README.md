@@ -12,3 +12,5 @@ Links are integrated for the following types:
 - source
 - file
 - url
+
+(This plugin requires Java 7 or higher.)
