@@ -111,6 +111,7 @@ public class AwesomeLinkFilter implements Filter {
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<>();
 		fileMatcher.reset(line);
+		final HyperlinkInfoFactory hyperlinkInfoFactory = HyperlinkInfoFactory.getInstance();
 		while (fileMatcher.find()) {
 			final String match = fileMatcher.group(1);
 			List<VirtualFile> matchingFiles = fileCache.get(match);
@@ -124,7 +125,7 @@ public class AwesomeLinkFilter implements Filter {
 			if (0 >= matchingFiles.size()) {
 				continue;
 			}
-			final HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(
+			final HyperlinkInfo linkInfo = hyperlinkInfoFactory.createMultipleFilesHyperlinkInfo(
 					matchingFiles,
 					fileMatcher.group(3) == null ? 0 : Integer.parseInt(fileMatcher.group(3)) - 1,
 					project
