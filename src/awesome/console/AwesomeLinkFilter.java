@@ -6,7 +6,6 @@ import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -28,11 +27,13 @@ public class AwesomeLinkFilter implements Filter {
 	private final List<String> srcRoots;
 	private final Matcher fileMatcher;
 	private final Matcher urlMatcher;
+	private ProjectRootManager projectRootManager;
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
 		this.fileCache = new HashMap<>();
 		this.fileBaseCache = new HashMap<>();
+		projectRootManager = ProjectRootManager.getInstance(project);
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
 		fileMatcher = FILE_PATTERN.matcher("");
@@ -167,31 +168,11 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private void createFileCache() {
-		final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-		final AwesomeCollectingContentIterator awesomeCollectingContentIterator = new AwesomeCollectingContentIterator();
-		fileIndex.iterateContent(awesomeCollectingContentIterator);
-
-		for (final VirtualFile file : awesomeCollectingContentIterator.getFiles()) {
-			/** cache for full file name */
-			final String filename = file.getName();
-			if (!fileCache.containsKey(filename)) {
-				fileCache.put(filename, new ArrayList<VirtualFile>());
-			}
-			fileCache.get(filename).add(file);
-			/** cache for basename (fully qualified class names) */
-			final String basename = file.getNameWithoutExtension();
-			if (0 >= basename.length()) {
-				continue;
-			}
-			if (!fileBaseCache.containsKey(basename)) {
-				fileBaseCache.put(basename, new ArrayList<VirtualFile>());
-			}
-			fileBaseCache.get(basename).add(file);
-		}
+		projectRootManager.getFileIndex().iterateContent(new AwesomeProjectFilesIterator(fileCache, fileBaseCache));
 	}
 
 	private List<String> getSourceRoots() {
-		final VirtualFile[] contentSourceRoots = ProjectRootManager.getInstance(project).getContentSourceRoots();
+		final VirtualFile[] contentSourceRoots = projectRootManager.getContentSourceRoots();
 		final List<String> roots = new ArrayList<>();
 		for (final VirtualFile root : contentSourceRoots) {
 			roots.add(root.getPath());
