@@ -7,6 +7,7 @@ import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
@@ -18,11 +19,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
-	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)(:(\\d+))?");
+	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)(:(\\d+))?(\\$[a-zA-Z0-9\\-_\\.]+)?");
 	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
 	private final AwesomeConsoleConfig config;
 	private final Map<String, List<VirtualFile>> fileCache;
 	private final Map<String, List<VirtualFile>> fileBaseCache;
+	private final Map<String, List<VirtualFile>> innerClassCache;
 	private final Project project;
 	private final List<String> srcRoots;
 	private final Matcher fileMatcher;
@@ -31,8 +33,9 @@ public class AwesomeLinkFilter implements Filter {
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
-		this.fileCache = new HashMap<>();
-		this.fileBaseCache = new HashMap<>();
+		fileCache = new HashMap<>();
+		fileBaseCache = new HashMap<>();
+		innerClassCache = new HashMap<>();
 		projectRootManager = ProjectRootManager.getInstance(project);
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
@@ -118,7 +121,13 @@ public class AwesomeLinkFilter implements Filter {
 			if (null == matchingFiles) {
 				matchingFiles = getResultItemsFileFromBasename(match);
 				if (null == matchingFiles || 0 >= matchingFiles.size()) {
-					continue;
+					final String innerClass = fileMatcher.group(4);
+					if (innerClass != null) {
+						matchingFiles = innerClassCache.get(StringUtil.substringAfter(innerClass, "$"));
+						if (null == matchingFiles || 0 >= matchingFiles.size()) {
+							continue;
+						}
+					}
 				}
 			}
 
@@ -169,7 +178,7 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private void createFileCache() {
-		projectRootManager.getFileIndex().iterateContent(new AwesomeProjectFilesIterator(fileCache, fileBaseCache));
+		projectRootManager.getFileIndex().iterateContent(new AwesomeProjectFilesIterator(fileCache, fileBaseCache, innerClassCache));
 	}
 
 	private List<String> getSourceRoots() {
