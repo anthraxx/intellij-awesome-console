@@ -13,4 +13,4 @@ Links are integrated for the following types:
 - file
 - url
 
-(This plugin requires Java 7 or higher.)
+**(This plugin requires your IDE to run on Java 7 or higher.)**
