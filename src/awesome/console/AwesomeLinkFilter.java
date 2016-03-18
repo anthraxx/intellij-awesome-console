@@ -8,18 +8,26 @@ import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.PathUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
-	private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)((:|(, line ))(\\d+))?");
-	private static final Pattern URL_PATTERN = Pattern.compile("((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
+	//private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)((:|(, line ))(\\d+))?");
+	private static final Pattern FILE_PATTERN = Pattern.compile(
+			"(?<link>(?<path>(?:[a-zA-Z]:\\\\|/)?[a-zA-Z0-9_][a-zA-Z0-9/\\-_\\.\\\\]*\\.[a-zA-Z0-9\\-_\\.]+)" +
+			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\))?)?)" // Optional row and col info
+	);
+
+	private static final Pattern URL_PATTERN = Pattern.compile(
+			"((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)"
+	);
+
 	private final AwesomeConsoleConfig config;
 	private final Map<String, List<VirtualFile>> fileCache;
 	private final Map<String, List<VirtualFile>> fileBaseCache;
@@ -42,12 +50,14 @@ public class AwesomeLinkFilter implements Filter {
 		createFileCache();
 	}
 
+	@Nullable
 	@Override
 	public Result applyFilter(final String line, final int endPoint) {
 		final List<ResultItem> results = new ArrayList<>();
 		final int startPoint = endPoint - line.length();
 		final List<String> chunks = splitLine(line);
 		int offset = 0;
+
 		for (final String chunk : chunks) {
 			if (config.SEARCH_URLS) {
 				results.addAll(getResultItemsUrl(chunk, startPoint + offset));
@@ -55,6 +65,7 @@ public class AwesomeLinkFilter implements Filter {
 			results.addAll(getResultItemsFile(chunk, startPoint + offset));
 			offset += chunk.length();
 		}
+
 		return new Result(results);
 	}
 
@@ -84,9 +95,11 @@ public class AwesomeLinkFilter implements Filter {
 		while (urlMatcher.find()) {
 			final String match = urlMatcher.group(1);
 			final String file = getFileFromUrl(match);
+
 			if (null != file && !new File(file).exists()) {
 				continue;
 			}
+
 			results.add(
 					new Result(
 							startPoint + urlMatcher.start(),
@@ -94,6 +107,7 @@ public class AwesomeLinkFilter implements Filter {
 							new OpenUrlHyperlinkInfo(match))
 			);
 		}
+
 		return results;
 	}
 
@@ -110,13 +124,15 @@ public class AwesomeLinkFilter implements Filter {
 
 	public List<ResultItem> getResultItemsFile(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<>();
-		fileMatcher.reset(line);
 		final HyperlinkInfoFactory hyperlinkInfoFactory = HyperlinkInfoFactory.getInstance();
-		while (fileMatcher.find()) {
-			final String match = fileMatcher.group(1);
-			List<VirtualFile> matchingFiles = fileCache.get(match);
+
+		List<LinkMatch> matches = detectPaths(line);
+		for(LinkMatch match: matches) {
+			String path = PathUtil.getFileName(match.path);
+			List<VirtualFile> matchingFiles = fileCache.get(path);
+
 			if (null == matchingFiles) {
-				matchingFiles = getResultItemsFileFromBasename(match);
+				matchingFiles = getResultItemsFileFromBasename(path);
 				if (null == matchingFiles || 0 >= matchingFiles.size()) {
 					continue;
 				}
@@ -125,18 +141,20 @@ public class AwesomeLinkFilter implements Filter {
 			if (0 >= matchingFiles.size()) {
 				continue;
 			}
+
 			final HyperlinkInfo linkInfo = hyperlinkInfoFactory.createMultipleFilesHyperlinkInfo(
 					matchingFiles,
-					fileMatcher.group(5) == null ? 0 : Integer.parseInt(fileMatcher.group(5)) - 1,
+					match.linkedRow < 0 ? 0 : match.linkedRow - 1,
 					project
 			);
-			results.add(
-					new Result(
-							startPoint + fileMatcher.start(),
-							startPoint + fileMatcher.end(),
-							linkInfo)
+
+			results.add(new Result(
+					startPoint + match.start,
+					startPoint + match.end,
+					linkInfo)
 			);
 		}
+
 		return results;
 	}
 
@@ -169,7 +187,8 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private void createFileCache() {
-		projectRootManager.getFileIndex().iterateContent(new AwesomeProjectFilesIterator(fileCache, fileBaseCache));
+		projectRootManager.getFileIndex().iterateContent(
+				new AwesomeProjectFilesIterator(fileCache, fileBaseCache));
 	}
 
 	private List<String> getSourceRoots() {
@@ -188,5 +207,46 @@ public class AwesomeLinkFilter implements Filter {
 			}
 		}
 		return false;
+	}
+
+	@NotNull
+	public List<LinkMatch> detectPaths(String line) {
+		List<LinkMatch> results = new LinkedList<>();
+
+		fileMatcher.reset(line);
+
+		while (fileMatcher.find()) {
+			String match = fileMatcher.group("link");
+
+
+			results.add(new LinkMatch(match, fileMatcher.group("path"),
+					fileMatcher.start(), fileMatcher.end(),
+					fileMatcher.group("row"), fileMatcher.group("col")));
+		}
+
+		return results;
+	}
+
+	public class LinkMatch {
+		public String match; // Full link match (with additional info, such as row and col)
+		public String path; // Just path - no additional info
+		public int linkedRow;
+		public int linkedCol;
+		public int start;
+		public int end;
+
+		public LinkMatch(String match, String path, int start, int end,
+						 @Nullable String row, @Nullable String col) {
+			this.match = match;
+			this.path = path;
+			this.start = start;
+			this.end = end;
+
+			if (row != null)
+				this.linkedRow = Integer.parseInt(row);
+
+			if (col != null)
+				this.linkedCol = Integer.parseInt(col);
+		}
 	}
 }
