@@ -1,6 +1,7 @@
 package awesome.console;
 
 import awesome.console.config.AwesomeConsoleConfig;
+import awesome.console.match.FileLinkMatch;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
@@ -128,8 +129,8 @@ public class AwesomeLinkFilter implements Filter {
 		final List<ResultItem> results = new ArrayList<>();
 		final HyperlinkInfoFactory hyperlinkInfoFactory = HyperlinkInfoFactory.getInstance();
 
-		List<LinkMatch> matches = detectPaths(line);
-		for(LinkMatch match: matches) {
+		List<FileLinkMatch> matches = detectPaths(line);
+		for(FileLinkMatch match: matches) {
 			String path = PathUtil.getFileName(match.path);
 			List<VirtualFile> matchingFiles = fileCache.get(path);
 
@@ -212,8 +213,8 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	@NotNull
-	public List<LinkMatch> detectPaths(final String line) {
-		final List<LinkMatch> results = new LinkedList<>();
+	public List<FileLinkMatch> detectPaths(final String line) {
+		final List<FileLinkMatch> results = new LinkedList<>();
 
 		fileMatcher.reset(line);
 
@@ -222,7 +223,7 @@ public class AwesomeLinkFilter implements Filter {
 			final String row = fileMatcher.group("row");
 			final String col = fileMatcher.group("col");
 
-			results.add(new LinkMatch(match, fileMatcher.group("path"),
+			results.add(new FileLinkMatch(match, fileMatcher.group("path"),
 					fileMatcher.start(), fileMatcher.end(),
 					null != row ? Integer.parseInt(row) : 0,
 					null != col ? Integer.parseInt(col) : 0));
@@ -231,26 +232,4 @@ public class AwesomeLinkFilter implements Filter {
 		return results;
 	}
 
-	class LinkMatch {
-		final String match; // Full link match (with additional info, such as row and col)
-		final String path; // Just path - no additional info
-		final int linkedRow;
-		final int linkedCol;
-		final int start;
-		final int end;
-
-		LinkMatch(final String match,
-					final String path,
-					 final int start,
-					 final int end,
-					 final int row,
-					 final int col) {
-			this.match = match;
-			this.path = path;
-			this.start = start;
-			this.end = end;
-			this.linkedRow = row;
-			this.linkedCol = col;
-		}
-	}
 }

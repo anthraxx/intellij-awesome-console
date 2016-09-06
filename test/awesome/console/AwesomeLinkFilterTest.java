@@ -1,5 +1,6 @@
 package awesome.console;
 
+import awesome.console.match.FileLinkMatch;
 import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -96,10 +97,10 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		AwesomeLinkFilter filter = new AwesomeLinkFilter(myFixture.getProject());
 
 		// Test only detecting file paths - no file existence check
-		List<AwesomeLinkFilter.LinkMatch> results = filter.detectPaths(line);
+		List<FileLinkMatch> results = filter.detectPaths(line);
 
 		assertEquals("No matches in line \"" + line + "\"", 1, results.size());
-		AwesomeLinkFilter.LinkMatch info = results.get(0);
+		FileLinkMatch info = results.get(0);
 		assertEquals(String.format("Expected filter to detect \"%s\" link in \"%s\"", expected, line), expected, info.match);
 
 		if (expectedRow >= 0)
