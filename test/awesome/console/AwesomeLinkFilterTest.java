@@ -1,54 +1,98 @@
 package awesome.console;
 
 import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
 public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
+    @Test
+    public void testFileWithoutDirectory() {
+        assertPathDetection("Just a file: test.txt", "test.txt");
+    }
 
     @Test
-    public void testFilter() {
-        testPathDetection("Just a file: test.txt", "test.txt");
-        testPathDetection("Another file: _test.txt", "_test.txt");
-        testPathDetection("Another file: test-me.txt", "test-me.txt");
-        testPathDetection("File in a dir (unix style): subdir/test.txt pewpew", "subdir/test.txt");
-        testPathDetection("File in a dir (Windows style): subdir\\test.txt pewpew", "subdir\\test.txt");
+    public void testFileContainingSpecialCharsWithoutDirectory() {
+        assertPathDetection("Another file: _test.txt", "_test.txt");
+        assertPathDetection("Another file: test-me.txt", "test-me.txt");
+    }
 
-        // TODO: detect files without extension
-        //testPathDetection("No extension: bin/script pewpew", "subdir/script");
+    @Test
+    public void testFileContainingDotsWithoutDirectory() {
+        assertPathDetection("Just a file: t.es.t.txt", "t.es.t.txt");
+    }
 
-        testPathDetection("With line: src/test.js:55", "src/test.js:55", 55);
+    @Test
+    public void testFileInRelativeDirectoryUnixStyle() {
+        assertPathDetection("File in a dir (unix style): subdir/test.txt pewpew", "subdir/test.txt");
+    }
 
+    @Test
+    public void testFileInRelativeDirectoryWindowsStyle() {
+        assertPathDetection("File in a dir (Windows style): subdir\\test.txt pewpew", "subdir\\test.txt");
+    }
+
+    @Test
+    public void testFileInAbsoluteDirectoryWindowsStyleWithDriveLetter() {
+        assertPathDetection("File in a absolute dir (Windows style): D:\\subdir\\test.txt pewpew", "D:\\subdir\\test.txt");
+    }
+
+    @Test
+    public void testFileInAbsoluteDirectoryMixedStyleWithDriveLetter() {
+        assertPathDetection("Mixed slashes: D:\\test\\me/test.txt - happens stometimes", "D:\\test\\me/test.txt");
+    }
+
+    @Test
+    public void testFileInRelativeDirectoryWithLineNumber() {
+        assertPathDetection("With line: src/test.js:55", "src/test.js:55", 55);
+    }
+
+    @Test
+    public void testFileInRelativeDirectoryWithWindowsTypeScriptStyleLineAndColumnNumbers() {
         // Windows, exception from TypeScript compiler
-        testPathDetection("From stack trace: src\\api\\service.ts(29,50)",
-                "src\\api\\service.ts(29,50)", 29, 50);
+        assertPathDetection("From stack trace: src\\api\\service.ts(29,50)", "src\\api\\service.ts(29,50)", 29, 50);
+    }
 
+    @Test
+    public void testFileInAbsoluteDirectoryWithWindowsTypeScriptStyleLineAndColumnNumbers() {
+        // Windows, exception from TypeScript compiler
+        assertPathDetection("From stack trace: D:\\src\\api\\service.ts(29,50)", "D:\\src\\api\\service.ts(29,50)", 29, 50);
+    }
+
+    @Test
+    public void testFileWithJavaExtensionInAbsoluteDirectoryAndLineNumbersWindowsStyle() {
+        assertPathDetection("Windows: d:\\my\\file.java:150", "d:\\my\\file.java:150", 150);
+    }
+
+    @Test
+    public void testFileWithJavaScriptExtensionInAbsoluteDirectoryWithLineNumbers() {
         // JS exception
-        testPathDetection("bla-bla /home/me/project/run.js:27 something",
-                "/home/me/project/run.js:27", 27);
+        assertPathDetection("bla-bla /home/me/project/run.js:27 something", "/home/me/project/run.js:27", 27);
+    }
 
+    @Test
+    public void testFileWithJavaStyleExceptionClassAndLineNumbers() {
         // Java exception stack trace
-        testPathDetection("bla-bla at (AwesomeLinkFilter.java:150) something",
-                "AwesomeLinkFilter.java:150", 150);
-
-        testPathDetection("Windows: d:\\my\\file.java:150",
-                "d:\\my\\file.java:150", 150);
-
-        testPathDetection("Mixed slashes: D:\\test\\me/test.txt - happens stometimes",
-                "D:\\test\\me/test.txt");
+        assertPathDetection("bla-bla at (AwesomeLinkFilter.java:150) something", "AwesomeLinkFilter.java:150", 150);
     }
 
-    private void testPathDetection(String line, String expected) {
-        testPathDetection(line, expected, -1, -1);
+    @Ignore
+    @Test
+    public void ignore_testFileWithoutExtensionInRelativeDirectory() {
+        // TODO: detect files without extension
+        assertPathDetection("No extension: bin/script pewpew", "bin/script");
     }
 
-    private void testPathDetection(String line, String expected, int expectedRow) {
-        testPathDetection(line, expected, expectedRow, -1);
+    private void assertPathDetection(final String line, final String expected) {
+        assertPathDetection(line, expected, -1, -1);
     }
 
-    private void testPathDetection(String line, String expected,
-                                   int expectedRow, int expectedCol) {
+    private void assertPathDetection(final String line, final String expected, final int expectedRow) {
+        assertPathDetection(line, expected, expectedRow, -1);
+    }
+
+    private void assertPathDetection(final String line, final String expected, final int expectedRow, final int expectedCol) {
         AwesomeLinkFilter filter = new AwesomeLinkFilter(myFixture.getProject());
 
         // Test only detecting file paths - no file existence check
@@ -56,8 +100,7 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 
         assertEquals("No matches in line \"" + line + "\"", 1, results.size());
         AwesomeLinkFilter.LinkMatch info = results.get(0);
-        assertEquals(String.format("Expected filter to detect \"%s\" link in \"%s\"", expected, line),
-                expected, info.match);
+        assertEquals(String.format("Expected filter to detect \"%s\" link in \"%s\"", expected, line), expected, info.match);
 
         if (expectedRow >= 0)
             assertEquals("Expected to capture row number", expectedRow, info.linkedRow);
@@ -65,5 +108,4 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
         if (expectedCol >= 0)
             assertEquals("Expected to capture column number", expectedCol, info.linkedCol);
     }
-
 }
