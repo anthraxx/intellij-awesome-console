@@ -13,19 +13,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
-	//private static final Pattern FILE_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9/\\-_\\.]*\\.[a-zA-Z0-9\\-_\\.]+)((:|(, line ))(\\d+))?");
 	private static final Pattern FILE_PATTERN = Pattern.compile(
-			"(?<link>(?<path>(?:[a-zA-Z]:\\\\|/)?[a-zA-Z0-9_][a-zA-Z0-9/\\-_\\.\\\\]*\\.[a-zA-Z0-9\\-_\\.]+)" +
-			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\))?)?)" // Optional row and col info
+			"(?<link>(?<path>(?:[a-zA-Z]:\\\\|/)?[a-zA-Z0-9_][a-zA-Z0-9/\\-_.\\\\]*\\.[a-zA-Z0-9\\-_.]+)" +
+			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\))?)?)"
 	);
-
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)"
+			"((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+)"
 	);
 
 	private final AwesomeConsoleConfig config;
@@ -210,43 +212,45 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	@NotNull
-	public List<LinkMatch> detectPaths(String line) {
-		List<LinkMatch> results = new LinkedList<>();
+	public List<LinkMatch> detectPaths(final String line) {
+		final List<LinkMatch> results = new LinkedList<>();
 
 		fileMatcher.reset(line);
 
 		while (fileMatcher.find()) {
-			String match = fileMatcher.group("link");
-
+			final String match = fileMatcher.group("link");
+			final String row = fileMatcher.group("row");
+			final String col = fileMatcher.group("col");
 
 			results.add(new LinkMatch(match, fileMatcher.group("path"),
 					fileMatcher.start(), fileMatcher.end(),
-					fileMatcher.group("row"), fileMatcher.group("col")));
+					null != row ? Integer.parseInt(row) : 0,
+					null != col ? Integer.parseInt(col) : 0));
 		}
 
 		return results;
 	}
 
-	public class LinkMatch {
-		public String match; // Full link match (with additional info, such as row and col)
-		public String path; // Just path - no additional info
-		public int linkedRow;
-		public int linkedCol;
-		public int start;
-		public int end;
+	class LinkMatch {
+		final String match; // Full link match (with additional info, such as row and col)
+		final String path; // Just path - no additional info
+		final int linkedRow;
+		final int linkedCol;
+		final int start;
+		final int end;
 
-		public LinkMatch(String match, String path, int start, int end,
-						 @Nullable String row, @Nullable String col) {
+		LinkMatch(final String match,
+					final String path,
+					 final int start,
+					 final int end,
+					 final int row,
+					 final int col) {
 			this.match = match;
 			this.path = path;
 			this.start = start;
 			this.end = end;
-
-			if (row != null)
-				this.linkedRow = Integer.parseInt(row);
-
-			if (col != null)
-				this.linkedCol = Integer.parseInt(col);
+			this.linkedRow = row;
+			this.linkedCol = col;
 		}
 	}
 }
