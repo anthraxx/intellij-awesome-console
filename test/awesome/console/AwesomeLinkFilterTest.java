@@ -21,6 +21,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	@Test
+	public void testFileInHomeDirectory() {
+		assertPathDetection("Another file: ~/testme.txt", "~/testme.txt");
+	}
+
+	@Test
 	public void testFileContainingDotsWithoutDirectory() {
 		assertPathDetection("Just a file: t.es.t.txt", "t.es.t.txt");
 	}
