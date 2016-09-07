@@ -11,6 +11,7 @@ public class IntegrationTest {
 		System.out.println("Just a file with path: test/awesome/integration/file1.java");
 		System.out.println("Just a file with path: ./test/awesome/integration/file1.java");
 		System.out.println("Absolute path: /tmp");
+		System.out.println("omfg something: git://xkcd.com/ yay");
 		System.out.println("omfg something: http://xkcd.com/ yay");
 		System.out.println("omfg something: http://8.8.8.8/ yay");
 		System.out.println("omfg something: https://xkcd.com/ yay");

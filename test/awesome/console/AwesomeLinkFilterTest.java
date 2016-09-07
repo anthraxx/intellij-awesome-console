@@ -127,6 +127,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	@Test
+	public void testURLGIT() {
+		assertURLDetection("omfg something: git://8.8.8.8:2424 yay", "git://8.8.8.8:2424");
+	}
+
+	@Test
 	public void testURLFILE() {
 		assertURLDetection("omfg something: file:///home/root yay", "file:///home/root");
 	}
