@@ -1,6 +1,7 @@
 package awesome.console;
 
 import awesome.console.match.FileLinkMatch;
+import awesome.console.match.URLLinkMatch;
 import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -85,6 +86,36 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertPathDetection("No extension: bin/script pewpew", "bin/script");
 	}
 
+	@Test
+	public void testURLHTTP() {
+		assertURLDetection("omfg something: http://xkcd.com/ yay", "http://xkcd.com/");
+	}
+
+	@Test
+	public void testURLHTTPWithIP() {
+		assertURLDetection("omfg something: http://8.8.8.8/ yay", "http://8.8.8.8/");
+	}
+
+	@Test
+	public void testURLHTTPS() {
+		assertURLDetection("omfg something: https://xkcd.com/ yay", "https://xkcd.com/");
+	}
+
+	@Test
+	public void testURLHTTPWithoutPath() {
+		assertURLDetection("omfg something: http://xkcd.com yay", "http://xkcd.com");
+	}
+
+	@Test
+	public void testURLFTPWithPort() {
+		assertURLDetection("omfg something: ftp://8.8.8.8:2424 yay", "ftp://8.8.8.8:2424");
+	}
+
+	@Test
+	public void testURLFILE() {
+		assertURLDetection("omfg something: file:///home/root yay", "file:///home/root");
+	}
+
 	private void assertPathDetection(final String line, final String expected) {
 		assertPathDetection(line, expected, -1, -1);
 	}
@@ -108,5 +139,17 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 
 		if (expectedCol >= 0)
 			assertEquals("Expected to capture column number", expectedCol, info.linkedCol);
+	}
+
+
+	private void assertURLDetection(final String line, final String expected) {
+		AwesomeLinkFilter filter = new AwesomeLinkFilter(myFixture.getProject());
+
+		// Test only detecting file paths - no file existence check
+		List<URLLinkMatch> results = filter.detectURLs(line);
+
+		assertEquals("No matches in line \"" + line + "\"", 1, results.size());
+		URLLinkMatch info = results.get(0);
+		assertEquals(String.format("Expected filter to detect \"%s\" link in \"%s\"", expected, line), expected, info.match);
 	}
 }

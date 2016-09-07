@@ -2,6 +2,7 @@ package awesome.console;
 
 import awesome.console.config.AwesomeConsoleConfig;
 import awesome.console.match.FileLinkMatch;
+import awesome.console.match.URLLinkMatch;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
@@ -28,7 +29,7 @@ public class AwesomeLinkFilter implements Filter {
 			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\))?)?)"
 	);
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"((((ftp)|(file)|(https?)):/)?/[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+)"
+			"(?<link>(?<protocol>((ftp)|(file)|(https?)):/)?(?<path>/[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
 	);
 
 	private final AwesomeConsoleConfig config;
@@ -94,10 +95,10 @@ public class AwesomeLinkFilter implements Filter {
 
 	public List<ResultItem> getResultItemsUrl(final String line, final int startPoint) {
 		final List<ResultItem> results = new ArrayList<>();
-		urlMatcher.reset(line);
-		while (urlMatcher.find()) {
-			final String match = urlMatcher.group(1);
-			final String file = getFileFromUrl(match);
+		final List<URLLinkMatch> matches = detectURLs(line);
+
+		for (final URLLinkMatch match : matches) {
+			final String file = getFileFromUrl(match.match);
 
 			if (null != file && !new File(file).exists()) {
 				continue;
@@ -107,10 +108,9 @@ public class AwesomeLinkFilter implements Filter {
 					new Result(
 							startPoint + urlMatcher.start(),
 							startPoint + urlMatcher.end(),
-							new OpenUrlHyperlinkInfo(match))
+							new OpenUrlHyperlinkInfo(match.match))
 			);
 		}
-
 		return results;
 	}
 
@@ -213,23 +213,29 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	@NotNull
-	public List<FileLinkMatch> detectPaths(final String line) {
-		final List<FileLinkMatch> results = new LinkedList<>();
-
+	public List<FileLinkMatch> detectPaths(@NotNull final String line) {
 		fileMatcher.reset(line);
-
+		final List<FileLinkMatch> results = new LinkedList<>();
 		while (fileMatcher.find()) {
 			final String match = fileMatcher.group("link");
 			final String row = fileMatcher.group("row");
 			final String col = fileMatcher.group("col");
-
 			results.add(new FileLinkMatch(match, fileMatcher.group("path"),
 					fileMatcher.start(), fileMatcher.end(),
 					null != row ? Integer.parseInt(row) : 0,
 					null != col ? Integer.parseInt(col) : 0));
 		}
-
 		return results;
 	}
 
+	@NotNull
+	public List<URLLinkMatch> detectURLs(@NotNull final String line) {
+		urlMatcher.reset(line);
+		final List<URLLinkMatch> results = new LinkedList<>();
+		while (urlMatcher.find()) {
+			final String match = urlMatcher.group("link");
+			results.add(new URLLinkMatch(match, urlMatcher.start(), urlMatcher.end()));
+		}
+		return results;
+	}
 }
