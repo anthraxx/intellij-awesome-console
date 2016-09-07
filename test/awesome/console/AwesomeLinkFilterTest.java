@@ -21,6 +21,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	@Test
+	public void testSimpleFileWithLineNumberAndColumn() {
+		assertPathDetection("With line: file1.java:5:5", "file1.java:5:5", 5, 5);
+	}
+
+	@Test
 	public void testFileInHomeDirectory() {
 		assertPathDetection("Another file: ~/testme.txt", "~/testme.txt");
 	}
