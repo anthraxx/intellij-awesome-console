@@ -106,8 +106,8 @@ public class AwesomeLinkFilter implements Filter {
 
 			results.add(
 					new Result(
-							startPoint + urlMatcher.start(),
-							startPoint + urlMatcher.end(),
+							startPoint + match.start,
+							startPoint + match.end,
 							new OpenUrlHyperlinkInfo(match.match))
 			);
 		}
