@@ -121,6 +121,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertURLDetection("omfg something: file:///home/root yay", "file:///home/root");
 	}
 
+	@Test
+	public void testURLFTPWithUsernameAndPath() {
+		assertURLDetection("omfg something: ftp://user:password@xkcd.com:1337/some/path yay", "ftp://user:password@xkcd.com:1337/some/path");
+	}
+
 	private void assertPathDetection(final String line, final String expected) {
 		assertPathDetection(line, expected, -1, -1);
 	}
