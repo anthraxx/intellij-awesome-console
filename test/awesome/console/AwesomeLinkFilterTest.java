@@ -79,6 +79,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertPathDetection("bla-bla at (AwesomeLinkFilter.java:150) something", "AwesomeLinkFilter.java:150", 150);
 	}
 
+	@Test
+	public void testFileWithRelativeDirectoryPythonExtensionAndLineNumberPlusColumn() {
+		assertPathDetection("bla-bla at ./foobar/AwesomeConsole.py:1337:42 something", "./foobar/AwesomeConsole.py:1337:42", 1337, 42);
+	}
+
 	@Ignore
 	@Test
 	public void ignore_testFileWithoutExtensionInRelativeDirectory() {
