@@ -73,6 +73,12 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	@Test
+	public void testFileInAbsoluteDirectoryWithWindowsTypeScriptStyleLineAndColumnNumbersAndMixedSlashes() {
+		// Windows, exception from TypeScript compiler
+		assertPathDetection("From stack trace: D:\\src\\api/service.ts(29,50)", "D:\\src\\api/service.ts(29,50)", 29, 50);
+	}
+
+	@Test
 	public void testFileWithJavaExtensionInAbsoluteDirectoryAndLineNumbersWindowsStyle() {
 		assertPathDetection("Windows: d:\\my\\file.java:150", "d:\\my\\file.java:150", 150);
 	}
@@ -129,6 +135,21 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	@Test
 	public void testURLGIT() {
 		assertURLDetection("omfg something: git://8.8.8.8:2424 yay", "git://8.8.8.8:2424");
+	}
+
+	@Test
+	public void testURLFILEWithoutSchemeUnixStyle() {
+		assertURLDetection("omfg something: /root/something yay", "/root/something");
+	}
+
+	@Test
+	public void testURLFILEWithoutSchemeWindowsStyle() {
+		assertURLDetection("omfg something: C:\\root\\something.java yay", "C:\\root\\something.java");
+	}
+
+	@Test
+	public void testURLFILEWithoutSchemeWindowsStyleWithMixedSlashes() {
+		assertURLDetection("omfg something: C:\\root/something.java yay", "C:\\root/something.java");
 	}
 
 	@Test
