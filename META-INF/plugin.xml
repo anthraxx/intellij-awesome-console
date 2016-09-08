@@ -1,6 +1,6 @@
 <idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
 	<name>Awesome Console</name>
-	<version>0.1337.5</version>
+	<version>0.1337.6</version>
 	<id>awesome.console</id>
 	<vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
 	<description><![CDATA[
@@ -20,6 +20,13 @@
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+		    <b>0.1337.6</b><br/>
+		    <ul>
+		        <li>More robust filename detection.</li>
+		        <li>Improved subdirectory detection.</li>
+		        <li>Support for arbitrary URL schemes.</li>
+		        <li>Support for Windows style absolute paths.</li>
+		    </ul>
 		    <b>0.1337.5</b><br/>
 		    <ul>
 		        <li>Increased performance, especially with large projects.</li>
