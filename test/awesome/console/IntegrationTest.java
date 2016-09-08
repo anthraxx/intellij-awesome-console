@@ -19,5 +19,9 @@ public class IntegrationTest {
 		System.out.println("omfg something: ftp://8.8.8.8:2424 yay");
 		System.out.println("omfg something: file:///tmp yay");
 		System.out.println("omfg something: ftp://user:password@xkcd.com:1337/some/path yay");
+		System.out.println("C:\\Windows\\Temp");
+		System.out.println("C:\\Windows/Temp");
+		System.out.println("C:/Windows/Temp");
+		System.out.println("omfg something: file://C:/Windows yay");
 	}
 }

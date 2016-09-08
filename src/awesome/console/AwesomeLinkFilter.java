@@ -29,7 +29,7 @@ public class AwesomeLinkFilter implements Filter {
 			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\)?)?)?)"
 	);
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"(?<link>(?<protocol>([a-z]+):/)?(?<path>/[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
+			"(?<link>(?<protocol>([a-zA-Z]+):(/|\\\\|~))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
 	);
 
 	private final AwesomeConsoleConfig config;
