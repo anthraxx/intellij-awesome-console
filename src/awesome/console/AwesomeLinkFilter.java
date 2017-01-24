@@ -31,6 +31,7 @@ public class AwesomeLinkFilter implements Filter {
 	private static final Pattern URL_PATTERN = Pattern.compile(
 			"(?<link>(?<protocol>(([a-zA-Z]+):)?(/|\\\\|~))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
 	);
+	private static final int maxSearchDepth = 1;
 
 	private final AwesomeConsoleConfig config;
 	private final Map<String, List<VirtualFile>> fileCache;
@@ -162,6 +163,10 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	public List<VirtualFile> getResultItemsFileFromBasename(final String match) {
+		return getResultItemsFileFromBasename(match, 0);
+	}
+
+	public List<VirtualFile> getResultItemsFileFromBasename(final String match, final int depth) {
 		final ArrayList<VirtualFile> matches = new ArrayList<>();
 		final char packageSeparator = '.';
 		final int index = match.lastIndexOf(packageSeparator);
@@ -169,13 +174,18 @@ public class AwesomeLinkFilter implements Filter {
 			return matches;
 		}
 		final String basename = match.substring(index + 1);
+		final String origin = match.substring(0, index);
+		final String path = origin.replace(packageSeparator, File.separatorChar);
 		if (0 >= basename.length()) {
 			return matches;
 		}
 		if (!fileBaseCache.containsKey(basename)) {
+			/* Try to search deeper down the rabbit hole */
+			if (depth <= maxSearchDepth) {
+				return getResultItemsFileFromBasename(origin, depth + 1);
+			}
 			return matches;
 		}
-		final String path = match.substring(0, index).replace(packageSeparator, File.separatorChar);
 		for (final VirtualFile file : fileBaseCache.get(basename)) {
 			final VirtualFile parent = file.getParent();
 			if (null == parent) {
