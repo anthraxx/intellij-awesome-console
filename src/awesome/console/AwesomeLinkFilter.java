@@ -29,7 +29,7 @@ public class AwesomeLinkFilter implements Filter {
 			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,](?<col>\\d+)\\)?)?)?)"
 	);
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"(?<link>(?<protocol>(([a-zA-Z]+):)?(/|\\\\|~))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
+			"(?<link>(?<protocol>(([a-zA-Z]+):)?(/|\\\\|~))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%# ]+))"
 	);
 	private static final int maxSearchDepth = 1;
 
