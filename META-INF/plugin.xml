@@ -66,6 +66,7 @@
 	<depends>com.intellij.modules.lang</depends>
 	<extensions defaultExtensionNs="com.intellij">
 		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
+		<applicationConfigurable id="awesomeconsole" displayName="Awesome Console" instance="awesome.console.config.AwesomeConsoleConfig"/>
 	</extensions>
 
 	<application-components>
