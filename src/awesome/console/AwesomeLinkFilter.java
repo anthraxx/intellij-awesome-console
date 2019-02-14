@@ -146,6 +146,10 @@ public class AwesomeLinkFilter implements Filter {
 				continue;
 			}
 
+			List<VirtualFile> strictMatchingFiles = strictFilesByPaths(matchingFiles, match);
+			if (strictMatchingFiles.size() > 0) {
+				matchingFiles = strictMatchingFiles;
+			}
 			final HyperlinkInfo linkInfo = hyperlinkInfoFactory.createMultipleFilesHyperlinkInfo(
 					matchingFiles,
 					match.linkedRow < 0 ? 0 : match.linkedRow - 1,
@@ -160,6 +164,22 @@ public class AwesomeLinkFilter implements Filter {
 		}
 
 		return results;
+	}
+
+	private List<VirtualFile> strictFilesByPaths(final List<VirtualFile> matchingFiles, final FileLinkMatch match) {
+		List<VirtualFile> strictMatchingFiles = new ArrayList<>();
+		for (VirtualFile matchedFile : matchingFiles) {
+			String generalisedFilePath = generalisePath(matchedFile.getPath());
+			String generalisedMatchPath = generalisePath(match.path);
+			if (generalisedFilePath.endsWith(generalisedMatchPath)) {
+				strictMatchingFiles.add(matchedFile);
+			}
+		}
+		return strictMatchingFiles;
+	}
+
+	private String generalisePath(final String path) {
+		return path.replace('/','.').replace('\\','.');
 	}
 
 	public List<VirtualFile> getResultItemsFileFromBasename(final String match) {
