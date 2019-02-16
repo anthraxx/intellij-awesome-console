@@ -179,7 +179,10 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private String generalisePath(final String path) {
-		return path.replace('/','.').replace('\\','.');
+		return path.replace('/', '.')
+				   .replace('\\', '.')
+				   .replace('~', ',')
+				   .replace("..","");
 	}
 
 	public List<VirtualFile> getResultItemsFileFromBasename(final String match) {
