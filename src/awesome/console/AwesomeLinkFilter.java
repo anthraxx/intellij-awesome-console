@@ -146,9 +146,9 @@ public class AwesomeLinkFilter implements Filter {
 				continue;
 			}
 
-			List<VirtualFile> strictMatchingFiles = strictFilesByPaths(matchingFiles, match);
-			if (strictMatchingFiles.size() > 0) {
-				matchingFiles = strictMatchingFiles;
+			List<VirtualFile> bestMatchingFiles = findBestMatchingFiles(match, matchingFiles);
+			if (bestMatchingFiles != null && !bestMatchingFiles.isEmpty()) {
+				matchingFiles = bestMatchingFiles;
 			}
 			final HyperlinkInfo linkInfo = hyperlinkInfoFactory.createMultipleFilesHyperlinkInfo(
 					matchingFiles,
@@ -166,23 +166,45 @@ public class AwesomeLinkFilter implements Filter {
 		return results;
 	}
 
-	private List<VirtualFile> strictFilesByPaths(final List<VirtualFile> matchingFiles, final FileLinkMatch match) {
-		List<VirtualFile> strictMatchingFiles = new ArrayList<>();
-		for (VirtualFile matchedFile : matchingFiles) {
-			String generalisedFilePath = generalisePath(matchedFile.getPath());
-			String generalisedMatchPath = generalisePath(match.path);
-			if (generalisedFilePath.endsWith(generalisedMatchPath)) {
-				strictMatchingFiles.add(matchedFile);
-			}
-		}
-		return strictMatchingFiles;
+	private List<VirtualFile> findBestMatchingFiles(final FileLinkMatch match, final List<VirtualFile> matchingFiles) {
+		String generalisedMatchPath = generalizePath(match.path);
+		return findBestMatchingFiles(generalisedMatchPath, matchingFiles);
 	}
 
-	private String generalisePath(final String path) {
-		return path.replace('/', '.')
-				   .replace('\\', '.')
-				   .replace('~', ',')
-				   .replace("..","");
+	private List<VirtualFile> findBestMatchingFiles(final String generalizedMatchPath,
+			final List<VirtualFile> matchingFiles) {
+		List<VirtualFile> foundFiles = getFilesByPath(generalizedMatchPath, matchingFiles);
+		if (!foundFiles.isEmpty()) {
+			return foundFiles;
+		}
+		String widerMetchingPath = dropOneLevelFromRoot(generalizedMatchPath);
+		if (widerMetchingPath != null) {
+			return findBestMatchingFiles(widerMetchingPath, matchingFiles);
+		}
+		return null;
+	}
+
+	private List<VirtualFile> getFilesByPath(String generalizedMatchPath, List<VirtualFile> matchingFiles) {
+		List<VirtualFile> matchedFiles = new ArrayList<>();
+		for (VirtualFile matchedFile : matchingFiles) {
+			String generalizedFilePath = generalizePath(matchedFile.getPath());
+			if (generalizedFilePath.endsWith(generalizedMatchPath)) {
+				matchedFiles.add(matchedFile);
+			}
+		}
+		return matchedFiles;
+	}
+
+	private String dropOneLevelFromRoot(String path) {
+		if (path.contains("/")) {
+			return path.substring(path.indexOf('/')+1);
+		} else {
+			return null;
+		}
+	}
+
+	private String generalizePath(final String path) {
+		return path.replace('\\', '/');
 	}
 
 	public List<VirtualFile> getResultItemsFileFromBasename(final String match) {
