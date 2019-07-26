@@ -1,6 +1,6 @@
 <idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
 	<name>Awesome Console</name>
-	<version>0.1337.7</version>
+	<version>0.1337.8</version>
 	<id>awesome.console</id>
 	<vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
 	<description><![CDATA[
@@ -20,6 +20,12 @@
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+		    <b>0.1337.8</b><br/>
+		    <ul>
+		        <li>Improved detection for various corner cases.</li>
+		        <li>Improved windows path detection.</li>
+		        <li>Fixed configuration panel.</li>
+		    </ul>
 		    <b>0.1337.7</b><br/>
 		    <ul>
 		        <li>Improved fully qualified name detection.</li>
