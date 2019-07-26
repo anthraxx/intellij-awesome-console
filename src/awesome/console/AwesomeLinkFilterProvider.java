@@ -8,8 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class AwesomeLinkFilterProvider implements ConsoleFilterProvider {
 	@NotNull
 	@Override
-	public Filter[] getDefaultFilters(@NotNull Project project) {
-		Filter filter = new AwesomeLinkFilter(project);
-		return new Filter[]{filter};
+	public Filter[] getDefaultFilters(@NotNull final Project project) {
+		return new Filter[]{new AwesomeLinkFilter(project)};
 	}
 }

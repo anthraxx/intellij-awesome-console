@@ -11,7 +11,7 @@ public class AwesomeProjectFilesIterator implements ContentIterator {
 	private final Map<String, List<VirtualFile>> fileCache;
 	private final Map<String, List<VirtualFile>> fileBaseCache;
 
-	public AwesomeProjectFilesIterator(final Map<String, List<VirtualFile>> fileCache, final Map<String, List<VirtualFile>> fileBaseCache) {
+	AwesomeProjectFilesIterator(final Map<String, List<VirtualFile>> fileCache, final Map<String, List<VirtualFile>> fileBaseCache) {
 		this.fileCache = fileCache;
 		this.fileBaseCache = fileBaseCache;
 	}
@@ -19,13 +19,13 @@ public class AwesomeProjectFilesIterator implements ContentIterator {
 	@Override
 	public boolean processFile(final VirtualFile file) {
 		if (!file.isDirectory()) {
-			/** cache for full file name */
+			/* cache for full file name */
 			final String filename = file.getName();
 			if (!fileCache.containsKey(filename)) {
 				fileCache.put(filename, new ArrayList<VirtualFile>());
 			}
 			fileCache.get(filename).add(file);
-			/** cache for basename (fully qualified class names) */
+			/* cache for basename (fully qualified class names) */
 			final String basename = file.getNameWithoutExtension();
 			if (0 >= basename.length()) {
 				return true;

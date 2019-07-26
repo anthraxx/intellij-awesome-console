@@ -40,7 +40,7 @@ public class AwesomeLinkFilter implements Filter {
 	private final List<String> srcRoots;
 	private final Matcher fileMatcher;
 	private final Matcher urlMatcher;
-	private ProjectRootManager projectRootManager;
+	private final ProjectRootManager projectRootManager;
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
@@ -104,7 +104,6 @@ public class AwesomeLinkFilter implements Filter {
 			if (null != file && !new File(file).exists()) {
 				continue;
 			}
-
 			results.add(
 					new Result(
 							startPoint + match.start,
@@ -130,23 +129,23 @@ public class AwesomeLinkFilter implements Filter {
 		final List<ResultItem> results = new ArrayList<>();
 		final HyperlinkInfoFactory hyperlinkInfoFactory = HyperlinkInfoFactory.getInstance();
 
-		List<FileLinkMatch> matches = detectPaths(line);
-		for(FileLinkMatch match: matches) {
-			String path = PathUtil.getFileName(match.path);
+		final List<FileLinkMatch> matches = detectPaths(line);
+		for(final FileLinkMatch match: matches) {
+			final String path = PathUtil.getFileName(match.path);
 			List<VirtualFile> matchingFiles = fileCache.get(path);
 
 			if (null == matchingFiles) {
 				matchingFiles = getResultItemsFileFromBasename(path);
-				if (null == matchingFiles || 0 >= matchingFiles.size()) {
+				if (null == matchingFiles || matchingFiles.isEmpty()) {
 					continue;
 				}
 			}
 
-			if (0 >= matchingFiles.size()) {
+			if (matchingFiles.isEmpty()) {
 				continue;
 			}
 
-			List<VirtualFile> bestMatchingFiles = findBestMatchingFiles(match, matchingFiles);
+			final List<VirtualFile> bestMatchingFiles = findBestMatchingFiles(match, matchingFiles);
 			if (bestMatchingFiles != null && !bestMatchingFiles.isEmpty()) {
 				matchingFiles = bestMatchingFiles;
 			}
@@ -167,27 +166,26 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private List<VirtualFile> findBestMatchingFiles(final FileLinkMatch match, final List<VirtualFile> matchingFiles) {
-		String generalisedMatchPath = generalizePath(match.path);
-		return findBestMatchingFiles(generalisedMatchPath, matchingFiles);
+		return findBestMatchingFiles(generalizePath(match.path), matchingFiles);
 	}
 
 	private List<VirtualFile> findBestMatchingFiles(final String generalizedMatchPath,
 			final List<VirtualFile> matchingFiles) {
-		List<VirtualFile> foundFiles = getFilesByPath(generalizedMatchPath, matchingFiles);
+		final List<VirtualFile> foundFiles = getFilesByPath(generalizedMatchPath, matchingFiles);
 		if (!foundFiles.isEmpty()) {
 			return foundFiles;
 		}
-		String widerMetchingPath = dropOneLevelFromRoot(generalizedMatchPath);
+		final String widerMetchingPath = dropOneLevelFromRoot(generalizedMatchPath);
 		if (widerMetchingPath != null) {
 			return findBestMatchingFiles(widerMetchingPath, matchingFiles);
 		}
 		return null;
 	}
 
-	private List<VirtualFile> getFilesByPath(String generalizedMatchPath, List<VirtualFile> matchingFiles) {
-		List<VirtualFile> matchedFiles = new ArrayList<>();
-		for (VirtualFile matchedFile : matchingFiles) {
-			String generalizedFilePath = generalizePath(matchedFile.getPath());
+	private List<VirtualFile> getFilesByPath(final String generalizedMatchPath, final List<VirtualFile> matchingFiles) {
+		final List<VirtualFile> matchedFiles = new ArrayList<>();
+		for (final VirtualFile matchedFile : matchingFiles) {
+			final String generalizedFilePath = generalizePath(matchedFile.getPath());
 			if (generalizedFilePath.endsWith(generalizedMatchPath)) {
 				matchedFiles.add(matchedFile);
 			}
@@ -195,7 +193,7 @@ public class AwesomeLinkFilter implements Filter {
 		return matchedFiles;
 	}
 
-	private String dropOneLevelFromRoot(String path) {
+	private String dropOneLevelFromRoot(final String path) {
 		if (path.contains("/")) {
 			return path.substring(path.indexOf('/')+1);
 		} else {
