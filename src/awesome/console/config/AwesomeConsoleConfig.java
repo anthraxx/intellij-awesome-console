@@ -15,7 +15,7 @@ import javax.swing.*;
 @State(
 		name = "Awesome Console Config",
 		storages = {
-				@Storage(id = "IDE config dir", file = StoragePathMacros.APP_CONFIG + "/awesomeconsoleconfig.xml")
+				@Storage(value = "awesomeconsole.xml", file = StoragePathMacros.WORKSPACE_FILE + "/awesomeconsoleconfig.xml")
 		}
 )
 public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable, ApplicationComponent {
