@@ -29,7 +29,7 @@ public class AwesomeLinkFilter implements Filter {
 			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,]( column )?(?<col>\\d+)\\)?)?)?)"
 	);
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"(?<link>(?<protocol>(([a-zA-Z]+):)?(/|\\\\|~))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
+			"(?<link>[(']?(?<protocol>(([a-zA-Z]+):)?([/\\\\~]))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
 	);
 	private static final int maxSearchDepth = 1;
 
@@ -288,8 +288,23 @@ public class AwesomeLinkFilter implements Filter {
 		urlMatcher.reset(line);
 		final List<URLLinkMatch> results = new LinkedList<>();
 		while (urlMatcher.find()) {
-			final String match = urlMatcher.group("link");
-			results.add(new URLLinkMatch(match, urlMatcher.start(), urlMatcher.end()));
+			String match = urlMatcher.group("link");
+			int startOffset = 0;
+			int endOffset = 0;
+
+			for (final String surrounding : new String[]{"()", "''"}) {
+				final String start = "" + surrounding.charAt(0);
+				final String end = "" + surrounding.charAt(1);
+				if (match.startsWith(start)) {
+					startOffset = 1;
+					match = match.substring(1);
+					if (match.endsWith(end)) {
+						endOffset = 1;
+						match = match.substring(0, match.length() - 1);
+					}
+				}
+			}
+			results.add(new URLLinkMatch(match, urlMatcher.start() + startOffset, urlMatcher.end() - endOffset));
 		}
 		return results;
 	}

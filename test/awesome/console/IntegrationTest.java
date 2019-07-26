@@ -25,5 +25,14 @@ public class IntegrationTest {
 		System.out.println("omfg something: file://C:/Windows yay");
 		System.out.println("awesome.console.AwesomeLinkFilter:5");
 		System.out.println("awesome.console.AwesomeLinkFilter.java:5");
+		System.out.println("something (C:\\root\\something.java) blabla");
+		System.out.println("something \"C:\\root\\something.java\" blabla");
+		System.out.println("something 'C:\\root\\something.java' blabla");
+		System.out.println("foo https://en.wikipedia.org/wiki/Parenthesis_(disambiguation) bar");
+		System.out.println("something (file1.java) blabla");
+		System.out.println("(file:///tmp)");
+		System.out.println("C:/Windows/Temp,");
+		System.out.println("Just a file: test/awesome/integration/file1.java, line 2, column 2");
+		System.out.println("Just a file with path: file://integration/file1.java:5:4");
 	}
 }
