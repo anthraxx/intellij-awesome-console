@@ -108,6 +108,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	@Test
+	public void test_unicore_path_filename() {
+		assertPathDetection("No extension: 中.txt yay", "中.txt");
+	}
+
+	@Test
 	public void testURLHTTP() {
 		assertURLDetection("omfg something: http://xkcd.com/ yay", "http://xkcd.com/");
 	}

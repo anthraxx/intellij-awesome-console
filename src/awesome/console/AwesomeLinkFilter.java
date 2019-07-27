@@ -25,12 +25,12 @@ import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile(
-			"(?<link>(?<path>([.~])?(?:[a-zA-Z]:\\\\|/)?[a-zA-Z0-9_][a-zA-Z0-9/\\-_.\\\\]*\\.[a-zA-Z0-9\\-_.]+)" +
-			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,]( column )?(?<col>\\d+)\\)?)?)?)"
-	);
+			"(?<link>(?<path>([.~])?(?:[a-zA-Z]:\\\\|/)?\\w[\\w/\\-.\\\\]*\\.[\\w\\-.]+)" +
+			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,]( column )?(?<col>\\d+)\\)?)?)?)",
+			Pattern.UNICODE_CHARACTER_CLASS);
 	private static final Pattern URL_PATTERN = Pattern.compile(
-			"(?<link>[(']?(?<protocol>(([a-zA-Z]+):)?([/\\\\~]))(?<path>[-_.!~*\\\\'()a-zA-Z0-9;/?:@&=+$,%#]+))"
-	);
+			"(?<link>[(']?(?<protocol>(([a-zA-Z]+):)?([/\\\\~]))(?<path>[-.!~*\\\\'()\\w;/?:@&=+$,%#]+))",
+			Pattern.UNICODE_CHARACTER_CLASS);
 	private static final int maxSearchDepth = 1;
 
 	private final AwesomeConsoleConfig config;

@@ -22,6 +22,7 @@
 		<p>
 		    <b>0.1337.8</b><br/>
 		    <ul>
+		        <li>Support for unicode path and filenames.</li>
 		        <li>Improved detection for various corner cases.</li>
 		        <li>Improved windows path detection.</li>
 		        <li>Fixed configuration panel.</li>

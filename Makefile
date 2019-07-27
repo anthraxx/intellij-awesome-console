@@ -1,4 +1,4 @@
-FILES=file1.py file1.java file_with.special-chars.js subdir/file1.java
+FILES=file1.py file1.java file_with.special-chars.js subdir/file1.java 中.txt
 
 test-files:
 	rm -rf test/awesome/integration
