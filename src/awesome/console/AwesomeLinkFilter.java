@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile(
-			"(?<link>(?<path>([.~])?(?:[a-zA-Z]:\\\\|/)?\\w[\\w/\\-.\\\\]*\\.[\\w\\-.]+)" +
+			"(?<link>(?<path>([.~])?(?:[a-zA-Z]:\\\\|/)?\\w[\\w/\\-.\\\\]*\\.[\\w\\-.]+)\\$?" +
 			"(?:(?::|, line |\\()(?<row>\\d+)(?:[:,]( column )?(?<col>\\d+)\\)?)?)?)",
 			Pattern.UNICODE_CHARACTER_CLASS);
 	private static final Pattern URL_PATTERN = Pattern.compile(

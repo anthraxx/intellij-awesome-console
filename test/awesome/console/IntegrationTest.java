@@ -38,5 +38,7 @@ public class IntegrationTest {
 		System.out.println("colon at the end: integration/file1.java:5:1:");
 		System.out.println("colon at the end: C:\\integration\\file1.java:5:4:");
 		System.out.println("unicode 中.txt:5 yay");
+		System.out.println("regular class name [awesome.console.IntegrationTest:4]");
+		System.out.println("scala class name [awesome.console.IntegrationTest$:4]");
 	}
 }
