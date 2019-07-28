@@ -3,9 +3,9 @@ package awesome.console.config;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.RoamingType;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.Transient;
@@ -18,7 +18,7 @@ import javax.swing.*;
 @State(
 		name = "Awesome Console Config",
 		storages = {
-				@Storage(value = "awesomeconsole.xml", file = StoragePathMacros.WORKSPACE_FILE + "/awesomeconsoleconfig.xml")
+				@Storage(value = "awesomeconsole.xml", roamingType = RoamingType.DISABLED)
 		}
 )
 public class AwesomeConsoleConfig implements PersistentStateComponent<AwesomeConsoleConfig>, Configurable, ApplicationComponent {
