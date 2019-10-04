@@ -83,6 +83,13 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertPathDetection("Windows: d:\\my\\file.java:150", "d:\\my\\file.java:150", 150);
 	}
 
+
+	@Test
+	public void testFileWithJavaExtensionInAbsoluteDirectoryWithLineAndColumnNumbersInMaven()
+	{
+		assertPathDetection("/home/me/project/run.java:[245,15]", "/home/me/project/run.java:[245,15]", 245, 15);
+	}
+
 	@Test
 	public void testFileWithJavaScriptExtensionInAbsoluteDirectoryWithLineNumbers() {
 		// JS exception

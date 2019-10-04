@@ -23,6 +23,7 @@ public class IntegrationTest {
 		System.out.println("C:\\Windows/Temp");
 		System.out.println("C:/Windows/Temp");
 		System.out.println("omfg something: file://C:/Windows yay");
+		System.out.println("[DEBUG] /var/www/src/main/java/com/example/User.java:[32,46] cannot find symbol");
 		System.out.println("awesome.console.AwesomeLinkFilter:5");
 		System.out.println("awesome.console.AwesomeLinkFilter.java:5");
 		System.out.println("something (C:\\root\\something.java) blabla");
