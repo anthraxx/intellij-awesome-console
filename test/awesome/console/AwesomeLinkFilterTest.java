@@ -179,6 +179,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertURLDetection("something (C:\\root\\something.java) blabla", "C:\\root\\something.java");
 	}
 
+	@Test
+	public void testWindowsDirectoryBackwardSlashes() {
+		assertPathDetection("C:/Windows/Temp/test.tsx:5:3", "C:/Windows/Temp/test.tsx", 5, 3);
+	}
+
 	private void assertPathDetection(final String line, final String expected) {
 		assertPathDetection(line, expected, -1, -1);
 	}

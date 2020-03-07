@@ -33,6 +33,7 @@ public class IntegrationTest {
 		System.out.println("something (file1.java) blabla");
 		System.out.println("(file:///tmp)");
 		System.out.println("C:/Windows/Temp,");
+		System.out.println("C:/Windows/Temp/test.tsx:5:3");
 		System.out.println("Just a file: test/awesome/integration/file1.java, line 2, column 2");
 		System.out.println("Just a file with path: file://integration/file1.java:5:4");
 		System.out.println("Just a file with path: C:\\integration\\file1.java:5:4");
