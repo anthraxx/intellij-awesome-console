@@ -1,4 +1,4 @@
-<idea-plugin version="2" url="https://github.com/anthraxx/intellij-awesome-console">
+<idea-plugin url="https://github.com/anthraxx/intellij-awesome-console">
 	<name>Awesome Console</name>
 	<version>0.1337.8</version>
 	<id>awesome.console</id>
@@ -69,7 +69,7 @@
 			</ul>
 		</p>
 	]]></change-notes>
-	<idea-version since-build="139.659"/>
+	<idea-version since-build="201.5985.32"/>
 	<depends>com.intellij.modules.lang</depends>
 	<extensions defaultExtensionNs="com.intellij">
 		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
