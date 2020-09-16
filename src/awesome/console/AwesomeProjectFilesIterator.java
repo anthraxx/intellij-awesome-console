@@ -18,24 +18,20 @@ public class AwesomeProjectFilesIterator implements ContentIterator {
 
 	@Override
 	public boolean processFile(final VirtualFile file) {
-		if (!file.isDirectory()) {
-			/* cache for full file name */
-			final String filename = file.getName();
-			if (!fileCache.containsKey(filename)) {
-				fileCache.put(filename, new ArrayList<VirtualFile>());
-			}
-			fileCache.get(filename).add(file);
-			/* cache for basename (fully qualified class names) */
-			final String basename = file.getNameWithoutExtension();
-			if (0 >= basename.length()) {
-				return true;
-			}
-			if (!fileBaseCache.containsKey(basename)) {
-				fileBaseCache.put(basename, new ArrayList<VirtualFile>());
-			}
-			fileBaseCache.get(basename).add(file);
+		if (file.isDirectory()) {
+			return true;
 		}
 
+		/* cache for full file name */
+		final String filename = file.getName();
+		fileCache.computeIfAbsent(filename, (key) -> new ArrayList<>()).add(file);
+
+		/* cache for basename (fully qualified class names) */
+		final String basename = file.getNameWithoutExtension();
+		if (basename.isEmpty()) {
+			return true;
+		}
+		fileBaseCache.computeIfAbsent(basename, (key) -> new ArrayList<>()).add(file);
 		return true;
 	}
 }

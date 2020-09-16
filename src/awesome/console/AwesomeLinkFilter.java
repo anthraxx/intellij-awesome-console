@@ -15,13 +15,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class AwesomeLinkFilter implements Filter {
 	private static final Pattern FILE_PATTERN = Pattern.compile(
@@ -44,8 +42,8 @@ public class AwesomeLinkFilter implements Filter {
 
 	public AwesomeLinkFilter(final Project project) {
 		this.project = project;
-		this.fileCache = new HashMap<>();
-		this.fileBaseCache = new HashMap<>();
+		this.fileCache = new ConcurrentHashMap<>();
+		this.fileBaseCache = new ConcurrentHashMap<>();
 		projectRootManager = ProjectRootManager.getInstance(project);
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
@@ -130,6 +128,7 @@ public class AwesomeLinkFilter implements Filter {
 		final HyperlinkInfoFactory hyperlinkInfoFactory = HyperlinkInfoFactory.getInstance();
 
 		final List<FileLinkMatch> matches = detectPaths(line);
+
 		for(final FileLinkMatch match: matches) {
 			final String path = PathUtil.getFileName(match.path);
 			List<VirtualFile> matchingFiles = fileCache.get(path);
@@ -183,14 +182,9 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	private List<VirtualFile> getFilesByPath(final String generalizedMatchPath, final List<VirtualFile> matchingFiles) {
-		final List<VirtualFile> matchedFiles = new ArrayList<>();
-		for (final VirtualFile matchedFile : matchingFiles) {
-			final String generalizedFilePath = generalizePath(matchedFile.getPath());
-			if (generalizedFilePath.endsWith(generalizedMatchPath)) {
-				matchedFiles.add(matchedFile);
-			}
-		}
-		return matchedFiles;
+		return matchingFiles.parallelStream()
+				.filter(file -> generalizePath(file.getPath()).endsWith(generalizedMatchPath))
+				.collect(Collectors.toList());
 	}
 
 	private String dropOneLevelFromRoot(final String path) {
@@ -210,36 +204,29 @@ public class AwesomeLinkFilter implements Filter {
 	}
 
 	public List<VirtualFile> getResultItemsFileFromBasename(final String match, final int depth) {
-		final ArrayList<VirtualFile> matches = new ArrayList<>();
 		final char packageSeparator = '.';
 		final int index = match.lastIndexOf(packageSeparator);
 		if (-1 >= index) {
-			return matches;
+			return new ArrayList<>();
 		}
 		final String basename = match.substring(index + 1);
 		final String origin = match.substring(0, index);
 		final String path = origin.replace(packageSeparator, File.separatorChar);
 		if (0 >= basename.length()) {
-			return matches;
+			return new ArrayList<>();
 		}
 		if (!fileBaseCache.containsKey(basename)) {
 			/* Try to search deeper down the rabbit hole */
 			if (depth <= maxSearchDepth) {
 				return getResultItemsFileFromBasename(origin, depth + 1);
 			}
-			return matches;
+			return new ArrayList<>();
 		}
-		for (final VirtualFile file : fileBaseCache.get(basename)) {
-			final VirtualFile parent = file.getParent();
-			if (null == parent) {
-				continue;
-			}
-			if (!matchSource(parent.getPath(), path)) {
-				continue;
-			}
-			matches.add(file);
-		}
-		return matches;
+
+		return fileBaseCache.get(basename).parallelStream()
+				.filter(file -> null != file.getParent())
+				.filter(file -> matchSource(file.getParent().getPath(), path))
+				.collect(Collectors.toList());
 	}
 
 	private void createFileCache() {
@@ -249,11 +236,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	private List<String> getSourceRoots() {
 		final VirtualFile[] contentSourceRoots = projectRootManager.getContentSourceRoots();
-		final List<String> roots = new ArrayList<>();
-		for (final VirtualFile root : contentSourceRoots) {
-			roots.add(root.getPath());
-		}
-		return roots;
+		return Arrays.stream(contentSourceRoots).map(VirtualFile::getPath).collect(Collectors.toList());
 	}
 
 	private boolean matchSource(final String parent, final String path) {
