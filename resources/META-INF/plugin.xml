@@ -4,22 +4,21 @@
 	<id>awesome.console</id>
 	<vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
 	<description><![CDATA[
-		Finally a plugin that makes links in your console at least 200% more awesome!<br/>
+		<p>Finally a plugin that makes links in your console and terminal at least 200% more awesome!<p/>
 		<br/>
-		With this plugin all files and links in the console will be highlighted and can be clicked. Source code files will be opened in the IDE, other links with the default viewer/browser for this type.<br/>
-		Now you just need to configure your favorite Logger to include the file name (and optionally a line number) and you can instantly jump to that file that throws this stupid error.<br/>
+		<p>With this plugin all files and links in the console and terminal will be highlighted and can be clicked. Source code files will be opened in the IDE, other links with the default viewer/browser for this type.<p/>
+		<p>Now you just need to configure your favorite Logger to include the file name (and optionally a line number) and you can instantly jump to that file that throws this stupid error.<p/>
 		<br/>
 		<img src="https://raw.githubusercontent.com/anthraxx/intellij-awesome-console/master/data/screenshot.png" alt="screenshot" /><br/>
-		<br/>
-		Links are integrated for the following types:
-		<ul>
-			<li>source</li>
-			<li>file</li>
-			<li>url</li>
-		</ul>
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+		    <b>0.1337.9</b><br/>
+		    <ul>
+		        <li>Improved compatibility with IDEA 2020.2</li>
+		        <li>Performance improvements in terminal mode</li>
+		        <li>Added line and column number support for Maven</li>
+		    </ul>
 		    <b>0.1337.8</b><br/>
 		    <ul>
 		        <li>Support for unicode path and filenames.</li>
