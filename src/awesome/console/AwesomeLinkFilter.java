@@ -7,6 +7,7 @@ import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
+import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -148,10 +149,13 @@ public class AwesomeLinkFilter implements Filter {
 			if (bestMatchingFiles != null && !bestMatchingFiles.isEmpty()) {
 				matchingFiles = bestMatchingFiles;
 			}
+
+			final int row = match.linkedRow <= 0 ? 0 : match.linkedRow - 1;
 			final HyperlinkInfo linkInfo = hyperlinkInfoFactory.createMultipleFilesHyperlinkInfo(
 					matchingFiles,
-					match.linkedRow < 0 ? 0 : match.linkedRow - 1,
-					project
+					row,
+					project,
+					(psiFile, editor, originalEditor) -> editor.getCaretModel().moveToVisualPosition(new VisualPosition(row, match.linkedCol))
 			);
 
 			results.add(new Result(

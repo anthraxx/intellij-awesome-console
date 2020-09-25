@@ -13,6 +13,10 @@
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+		    <b>0.1337.10</b><br/>
+		    <ul>
+		        <li>Added support to scroll to column numbers</li>
+		    </ul>
 		    <b>0.1337.9</b><br/>
 		    <ul>
 		        <li>Improved compatibility with IDEA 2020.2</li>
@@ -68,7 +72,7 @@
 			</ul>
 		</p>
 	]]></change-notes>
-	<idea-version since-build="201.5985.32"/>
+	<idea-version since-build="202.4751.1"/>
 	<depends>com.intellij.modules.lang</depends>
 	<extensions defaultExtensionNs="com.intellij">
 		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>
