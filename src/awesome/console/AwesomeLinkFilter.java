@@ -7,6 +7,7 @@ import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -23,6 +24,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class AwesomeLinkFilter implements Filter {
+	private static final Logger logger = Logger.getInstance(AwesomeLinkFilter.class);
+
 	private static final Pattern FILE_PATTERN = Pattern.compile(
 			"(?<link>(?<path>([.~])?(?:[a-zA-Z]:\\\\|/)?\\w[\\w/\\-.\\\\]*\\.[\\w\\-.]+)\\$?" +
 			"(?:(?::|, line |:\\[|\\()(?<row>\\d+)(?:[:,]( column )?(?<col>\\d+)([)\\]])?)?)?)",
@@ -258,12 +261,16 @@ public class AwesomeLinkFilter implements Filter {
 		final List<FileLinkMatch> results = new LinkedList<>();
 		while (fileMatcher.find()) {
 			final String match = fileMatcher.group("link");
-			final String row = fileMatcher.group("row");
-			final String col = fileMatcher.group("col");
-			results.add(new FileLinkMatch(match, fileMatcher.group("path"),
+			final String path = fileMatcher.group("path");
+			if (null == path) {
+				logger.error("Regex group 'path' was NULL while trying to match path line: " + line + "\nfor match: " + match);
+				continue;
+			}
+			final int row = Optional.ofNullable(fileMatcher.group("row")).map(Integer::parseInt).orElse(0);
+			final int col = Optional.ofNullable(fileMatcher.group("col")).map(Integer::parseInt).orElse(0);
+			results.add(new FileLinkMatch(match, path,
 					fileMatcher.start(), fileMatcher.end(),
-					null != row ? Integer.parseInt(row) : 0,
-					null != col ? Integer.parseInt(col) : 0));
+					row, col));
 		}
 		return results;
 	}
@@ -274,6 +281,11 @@ public class AwesomeLinkFilter implements Filter {
 		final List<URLLinkMatch> results = new LinkedList<>();
 		while (urlMatcher.find()) {
 			String match = urlMatcher.group("link");
+			if (null == match) {
+				logger.error("Regex group 'link' was NULL while trying to match url line: " + line);
+				continue;
+			}
+
 			int startOffset = 0;
 			int endOffset = 0;
 

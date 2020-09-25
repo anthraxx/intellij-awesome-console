@@ -16,6 +16,7 @@
 		    <b>0.1337.10</b><br/>
 		    <ul>
 		        <li>Added support to scroll to column numbers</li>
+		        <li>Guard regex group enge case to avoid crash</li>
 		    </ul>
 		    <b>0.1337.9</b><br/>
 		    <ul>
