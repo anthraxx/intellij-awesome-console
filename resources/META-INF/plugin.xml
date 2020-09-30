@@ -17,6 +17,7 @@
 		    <ul>
 		        <li>Added support to scroll to column numbers</li>
 		        <li>Guard regex group edge case to avoid crash</li>
+		        <li>Fixed project cache memory leak on project close</li>
 		    </ul>
 		    <b>0.1337.9</b><br/>
 		    <ul>
