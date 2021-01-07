@@ -5,6 +5,7 @@ public class IntegrationTest {
 		System.out.println("Just a file: file1.java");
 		System.out.println("Just a file with line num: file1.java:5");
 		System.out.println("Just a file with line num and col: file1.java:5:3");
+		System.out.println("Just a file with line num and col: file1.java:1606293360891972:1606293360891972");
 		System.out.println("Just a file with line num and col: file_with.special-chars.js:5:3");
 		System.out.println("bla-bla at (AwesomeLinkFilter.java:150) something");
 		System.out.println("Just a file with path: integration/file1.java");

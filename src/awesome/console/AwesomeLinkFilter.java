@@ -3,6 +3,7 @@ package awesome.console;
 import awesome.console.config.AwesomeConsoleConfig;
 import awesome.console.match.FileLinkMatch;
 import awesome.console.match.URLLinkMatch;
+import awesome.console.util.IntegerUtil;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
@@ -266,8 +267,8 @@ public class AwesomeLinkFilter implements Filter {
 				logger.error("Regex group 'path' was NULL while trying to match path line: " + line + "\nfor match: " + match);
 				continue;
 			}
-			final int row = Optional.ofNullable(fileMatcher.group("row")).map(Integer::parseInt).orElse(0);
-			final int col = Optional.ofNullable(fileMatcher.group("col")).map(Integer::parseInt).orElse(0);
+			final int row = IntegerUtil.parseInt(fileMatcher.group("row")).orElse(0);
+			final int col = IntegerUtil.parseInt(fileMatcher.group("col")).orElse(0);
 			results.add(new FileLinkMatch(match, path,
 					fileMatcher.start(), fileMatcher.end(),
 					row, col));

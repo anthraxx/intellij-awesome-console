@@ -184,6 +184,11 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 		assertPathDetection("C:/Windows/Temp/test.tsx:5:3", "C:/Windows/Temp/test.tsx", 5, 3);
 	}
 
+	@Test
+	public void testOverlyLongRowAndColumnNumbers() {
+		assertPathDetection("test.tsx:123123123123123:12312312312312321", "test.tsx", 0, 0);
+	}
+
 	private void assertPathDetection(final String line, final String expected) {
 		assertPathDetection(line, expected, -1, -1);
 	}
