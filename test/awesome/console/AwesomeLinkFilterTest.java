@@ -2,13 +2,13 @@ package awesome.console;
 
 import awesome.console.match.FileLinkMatch;
 import awesome.console.match.URLLinkMatch;
-import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
-public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
+public class AwesomeLinkFilterTest extends BasePlatformTestCase {
 	@Test
 	public void testFileWithoutDirectory() {
 		assertPathDetection("Just a file: test.txt", "test.txt");
@@ -198,7 +198,7 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 	}
 
 	private void assertPathDetection(final String line, final String expected, final int expectedRow, final int expectedCol) {
-		AwesomeLinkFilter filter = new AwesomeLinkFilter(myFixture.getProject());
+		AwesomeLinkFilter filter = new AwesomeLinkFilter(getProject());
 
 		// Test only detecting file paths - no file existence check
 		List<FileLinkMatch> results = filter.detectPaths(line);
@@ -216,7 +216,7 @@ public class AwesomeLinkFilterTest extends CodeInsightFixtureTestCase {
 
 
 	private void assertURLDetection(final String line, final String expected) {
-		AwesomeLinkFilter filter = new AwesomeLinkFilter(myFixture.getProject());
+		AwesomeLinkFilter filter = new AwesomeLinkFilter(getProject());
 
 		// Test only detecting file paths - no file existence check
 		List<URLLinkMatch> results = filter.detectURLs(line);
