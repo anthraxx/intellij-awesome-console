@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="awesome-console">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/awesome-console.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
