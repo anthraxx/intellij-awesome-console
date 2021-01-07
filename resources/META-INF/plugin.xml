@@ -17,7 +17,8 @@
 		    <ul>
 		        <li>Added support to scroll to column numbers</li>
 		        <li>Guard regex group edge case to avoid crash</li>
-		        <li>Fixed project cache memory leak on project close</li>
+				<li>Fixed project cache memory leak on project close</li>
+				<li>Fixed support for windows paths with row:col</li>
 		    </ul>
 		    <b>0.1337.9</b><br/>
 		    <ul>
