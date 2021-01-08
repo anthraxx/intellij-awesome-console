@@ -2,6 +2,8 @@ package awesome.console;
 
 public class IntegrationTest {
 	public static void main(final String[] args) {
+		System.out.println(AwesomeLinkFilter.FILE_PATTERN);
+		System.out.println(AwesomeLinkFilter.URL_PATTERN);
 		System.out.println("Just a file: file1.java");
 		System.out.println("Just a file with line num: file1.java:5");
 		System.out.println("Just a file with line num and col: file1.java:5:3");
@@ -43,5 +45,6 @@ public class IntegrationTest {
 		System.out.println("unicode 中.txt:5 yay");
 		System.out.println("regular class name [awesome.console.IntegrationTest:4]");
 		System.out.println("scala class name [awesome.console.IntegrationTest$:4]");
+		System.out.println("C:/project/node_modules/typescript/lib/lib.webworker.d.ts:1930:6:");
 	}
 }
