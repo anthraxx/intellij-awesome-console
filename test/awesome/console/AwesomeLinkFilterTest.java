@@ -200,6 +200,11 @@ public class AwesomeLinkFilterTest extends BasePlatformTestCase {
 		assertPathDetection("File \"/Applications/plugins/python-ce/helpers/pycharm/teamcity/diff_tools.py\", line 38", "\"/Applications/plugins/python-ce/helpers/pycharm/teamcity/diff_tools.py\", line 38",38);
 	}
 
+	@Test
+	public void testAngularJSAtModule() {
+		assertPathDetection("src/app/@app/app.module.ts:42:5", "src/app/@app/app.module.ts:42:5",42, 5);
+	}
+
 	private void assertPathDetection(final String line, final String expected) {
 		assertPathDetection(line, expected, -1, -1);
 	}

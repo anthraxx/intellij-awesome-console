@@ -21,6 +21,7 @@
 				<li>Guard row and column number parsing</li>
 				<li>Fixed project cache memory leak on project close</li>
 				<li>Fixed support for windows paths with row:col</li>
+				<li>Fixed support '@' character in paths</li>
 			</ul>
 			<b>0.1337.9</b><br/>
 			<ul>
