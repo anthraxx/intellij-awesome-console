@@ -13,6 +13,10 @@
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+			<b>0.1337.11</b><br/>
+			<ul>
+				<li>Fix crash caused by concurrency issue with multiple consoles</li>
+			</ul>
 			<b>0.1337.10</b><br/>
 			<ul>
 				<li>Added support to scroll to column numbers</li>
