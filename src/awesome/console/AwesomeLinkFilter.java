@@ -41,8 +41,8 @@ public class AwesomeLinkFilter implements Filter {
 	private final Map<String, List<VirtualFile>> fileBaseCache;
 	private final Project project;
 	private final List<String> srcRoots;
-	private final Matcher fileMatcher;
-	private final Matcher urlMatcher;
+	private final ThreadLocal<Matcher> fileMatcher = ThreadLocal.withInitial(() -> FILE_PATTERN.matcher(""));
+	private final ThreadLocal<Matcher> urlMatcher = ThreadLocal.withInitial(() -> URL_PATTERN.matcher(""));
 	private final ProjectRootManager projectRootManager;
 
 	public AwesomeLinkFilter(final Project project) {
@@ -52,8 +52,6 @@ public class AwesomeLinkFilter implements Filter {
 		projectRootManager = ProjectRootManager.getInstance(project);
 		srcRoots = getSourceRoots();
 		config = AwesomeConsoleConfig.getInstance();
-		fileMatcher = FILE_PATTERN.matcher("");
-		urlMatcher = URL_PATTERN.matcher("");
 
 		createFileCache();
 	}
@@ -258,6 +256,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	@NotNull
 	public List<FileLinkMatch> detectPaths(@NotNull final String line) {
+		final Matcher fileMatcher = this.fileMatcher.get();
 		fileMatcher.reset(line);
 		final List<FileLinkMatch> results = new LinkedList<>();
 		while (fileMatcher.find()) {
@@ -278,6 +277,7 @@ public class AwesomeLinkFilter implements Filter {
 
 	@NotNull
 	public List<URLLinkMatch> detectURLs(@NotNull final String line) {
+		final Matcher urlMatcher = this.urlMatcher.get();
 		urlMatcher.reset(line);
 		final List<URLLinkMatch> results = new LinkedList<>();
 		while (urlMatcher.find()) {
