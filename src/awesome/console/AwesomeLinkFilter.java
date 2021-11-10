@@ -157,7 +157,7 @@ public class AwesomeLinkFilter implements Filter {
 					matchingFiles,
 					row,
 					project,
-					(psiFile, editor, originalEditor) -> editor.getCaretModel().moveToVisualPosition(new VisualPosition(row, match.linkedCol))
+					(project, psiFile, editor, originalEditor) -> editor.getCaretModel().moveToVisualPosition(new VisualPosition(row, match.linkedCol))
 			);
 
 			results.add(new Result(
