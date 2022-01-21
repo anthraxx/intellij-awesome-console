@@ -170,6 +170,11 @@ public class AwesomeLinkFilterTest extends BasePlatformTestCase {
 	}
 
 	@Test
+	public void testURLFILE() {
+		assertURLDetection("omfg something from truffle: project:/home/root yay", "/home/root");
+	}
+
+	@Test
 	public void testURLFTPWithUsernameAndPath() {
 		assertURLDetection("omfg something: ftp://user:password@xkcd.com:1337/some/path yay", "ftp://user:password@xkcd.com:1337/some/path");
 	}

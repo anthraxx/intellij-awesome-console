@@ -124,6 +124,10 @@ public class AwesomeLinkFilter implements Filter {
 		if (url.startsWith(fileUrl)) {
 			return url.substring(fileUrl.length());
 		}
+		final String projectUrl = "project:";
+		if (url.startsWith(projectUrl)) {
+			return url.substring(projectUrl.length());
+		}
 		return null;
 	}
 
