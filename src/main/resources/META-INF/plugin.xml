@@ -1,6 +1,5 @@
 <idea-plugin url="https://github.com/anthraxx/intellij-awesome-console">
 	<name>Awesome Console</name>
-	<version>0.1337.11</version>
 	<id>awesome.console</id>
 	<vendor email="plugins@battle-over-aiur.de">awesome productions</vendor>
 	<description><![CDATA[
@@ -13,6 +12,11 @@
 	]]></description>
  <change-notes><![CDATA[
 		<p>
+			<b>0.1337.12</b><br/>
+			<ul>
+				<li>Bumped minimum Java version to 11</li>
+				<li>Fix crash caused by incompatible HyperlinkHandler</li>
+			</ul>
 			<b>0.1337.11</b><br/>
 			<ul>
 				<li>Fix crash caused by concurrency issue with multiple consoles</li>
@@ -82,7 +86,7 @@
 			</ul>
 		</p>
 	]]></change-notes>
-	<idea-version since-build="202.4751.1"/>
+	<idea-version since-build="212.5080"/>
 	<depends>com.intellij.modules.lang</depends>
 	<extensions defaultExtensionNs="com.intellij">
 		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>

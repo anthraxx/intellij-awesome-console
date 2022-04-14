@@ -1,6 +1,8 @@
 /out
+/build
+/.gradle
 *.class
 *.jar
 
 .idea/workspace.xml
-/test/awesome/integration
+src/test/resources

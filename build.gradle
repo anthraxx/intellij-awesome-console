@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.5.2'
+}
+
+java {
+    sourceCompatibility = "${javaVersion}"
+    targetCompatibility = "${javaVersion}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    pluginName = "${pluginName}"
+    version = "${platformVersion}"
+    type = "${platformType}"
+    updateSinceUntilBuild = false
+    plugins = ["java"]
+}
