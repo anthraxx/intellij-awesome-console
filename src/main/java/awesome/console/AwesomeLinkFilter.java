@@ -9,6 +9,7 @@ import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.HyperlinkInfoFactory;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -157,7 +158,7 @@ public class AwesomeLinkFilter implements Filter {
 					matchingFiles,
 					row,
 					project,
-					(project, psiFile, editor, originalEditor) -> editor.getCaretModel().moveToVisualPosition(new VisualPosition(row, match.linkedCol))
+					(project, psiFile, editor, originalEditor) -> editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(row, match.linkedCol))
 			);
 
 			results.add(new Result(

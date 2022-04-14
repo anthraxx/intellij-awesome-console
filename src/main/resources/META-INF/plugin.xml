@@ -14,6 +14,7 @@
 		<p>
 			<b>0.1337.12</b><br/>
 			<ul>
+				<li>Fix jumping to wrong cursor position on folded sources</li>
 				<li>Bumped minimum Java version to 11</li>
 				<li>Fix crash caused by incompatible HyperlinkHandler</li>
 			</ul>
