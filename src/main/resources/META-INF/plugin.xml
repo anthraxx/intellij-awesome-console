@@ -87,7 +87,6 @@
 			</ul>
 		</p>
 	]]></change-notes>
-	<idea-version since-build="212.5080"/>
 	<depends>com.intellij.modules.lang</depends>
 	<extensions defaultExtensionNs="com.intellij">
 		<consoleFilterProvider implementation="awesome.console.AwesomeLinkFilterProvider"/>

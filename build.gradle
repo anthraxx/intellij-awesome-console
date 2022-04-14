@@ -4,9 +4,10 @@ plugins {
 }
 
 java {
-    sourceCompatibility = "${javaVersion}"
-    targetCompatibility = "${javaVersion}"
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
 repositories {
     mavenCentral()
@@ -14,9 +15,12 @@ repositories {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    pluginName = "${pluginName}"
-    version = "${platformVersion}"
-    type = "${platformType}"
-    updateSinceUntilBuild = false
+    pluginName = pluginTitle
+    version = platformVersion
+    type = platformType
     plugins = ["java"]
+}
+
+patchPluginXml {
+    untilBuild = ""
 }
